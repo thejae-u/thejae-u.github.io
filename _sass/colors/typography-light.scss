@@ -6,7 +6,7 @@
   /* Framework color */
   --main-bg: white;
   --mask-bg: #c1c3c5;
-  --main-border-color: #f3f3f3;
+  --main-border-color: black;
 
   /* Common color */
   --text-color: #34343c;
@@ -98,6 +98,10 @@
 
   .dark {
     display: none;
+  }
+
+  hr {
+      border-color: var(--main-border-color);
   }
 
   /* Categories */
