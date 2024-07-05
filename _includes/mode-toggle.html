@@ -112,23 +112,6 @@
             );
         }
 
-        loadComment() {
-            let s = document.createElement('script');
-            s.src = 'https://utteranc.es/client.js';
-            s.setAttribute('repo', 'thejae-u/thejae-u.github.io'); // 본인 레포 지정
-            s.setAttribute('issue-term', 'pathname');
-            s.setAttribute('theme', getTheme());
-            s.setAttribute('crossorigin', 'anonymous');
-            s.setAttribute('async', '');
-            document.querySelector('div.comments').innerHTML = '';
-            document.querySelector('div.comments').appendChild(s);
-        }
-
-        getTheme() {
-            theme = document.documentElement.getAttribute('data-mode');
-            return theme === 'light' ? 'github-light' : 'github-dark';
-        }
-
         flipMode() {
             if (this.hasMode) {
                 if (this.isSysDarkPrefer) {
@@ -152,8 +135,8 @@
                 }
             }
 
-            loadComment();
             this.notify();
+            location.reload();
         } /* flipMode() */
     } /* ModeToggle */
 
