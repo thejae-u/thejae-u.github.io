@@ -11,7 +11,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>C++ random_device - Thejaeu Dev-log</title>
-<meta name="description" content="오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다">
+<meta name="description" content="오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다   기본 사용  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed());  auto rNumber = generator();  // ...      &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함   mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨   random number distribution  정수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨  // ...       uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음   정수 정규 분포 생성  ```cpp #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨  // ...      normal_distribution을 통해 정규 분포된 값을 생성할 수 있음   실수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음   실수 정규 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
 
 
   <meta name="author" content="김재우(thejaeu)">
@@ -27,7 +27,7 @@
 <meta property="og:url" content="http://0.0.0.0:4000/c++/random-device/">
 
 
-  <meta property="og:description" content="오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다">
+  <meta property="og:description" content="오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다   기본 사용  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed());  auto rNumber = generator();  // ...      &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함   mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨   random number distribution  정수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨  // ...       uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음   정수 정규 분포 생성  ```cpp #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨  // ...      normal_distribution을 통해 정규 분포된 값을 생성할 수 있음   실수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음   실수 정규 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
 
 
 
@@ -272,7 +272,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="C++ random_device">
-    <meta itemprop="description" content="  오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다">
+    <meta itemprop="description" content="  오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다기본 사용#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());auto rNumber = generator();// ...  &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함  mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨random number distribution정수 균등 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100for(int i=0;i&lt;100;++i)	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨// ...  uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음정수 정규 분포 생성```cpp#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10for(int i=0;i&lt;100;++i)	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨// ...  normal_distribution을 통해 정규 분포된 값을 생성할 수 있음실수 균등 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100for(int i=0;i&lt;100;++i)	auto num = dis(gen); // double 타입의 값을 return 함// ...  uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음실수 정규 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8for(int i=0;i&lt;100;++i)	auto num = dis(gen); // double 타입의 값을 return 함// ...  normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
     <meta itemprop="datePublished" content="2025-12-28T00:00:00+00:00">
     
 
@@ -321,6 +321,7 @@
 </blockquote>
 
 <h2 id="기본-사용">기본 사용</h2>
+
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;random&gt;</span><span class="cp">
 </span>
 <span class="c1">// ...</span>
@@ -332,13 +333,16 @@
 
 <span class="c1">// ...</span>
 </code></pre></div></div>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">&lt;random&gt;</code> 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함</li>
   <li>mt19937에는 <code class="language-plaintext highlighter-rouge">operator()</code>가 정의 되어있으며 호출만 하면 난수가 생성이 됨</li>
 </ul>
 
 <h2 id="random-number-distribution">random number distribution</h2>
+
 <h3 id="정수-균등-분포-생성">정수 균등 분포 생성</h3>
+
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;random&gt;</span><span class="cp">
 </span>
 <span class="c1">// ...</span>
@@ -349,15 +353,17 @@
 
 <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
 	<span class="k">auto</span> <span class="n">num</span> <span class="o">=</span> <span class="n">dis</span><span class="p">(</span><span class="n">gen</span><span class="p">);</span> <span class="c1">// 0부터 100까지 균등한 확률로 생성됨</span>
-	
+
 <span class="c1">// ...</span>
 
 </code></pre></div></div>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">uniform_int_distribution</code>을 통해 균등 분포된 값을 생성할 수 있음</li>
 </ul>
 
 <h3 id="정수-정규-분포-생성">정수 정규 분포 생성</h3>
+
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">```</span><span class="n">cpp</span>
 <span class="cp">#include</span> <span class="cpf">&lt;random&gt;</span><span class="cp">
 </span>
@@ -372,11 +378,13 @@
 
 <span class="c1">// ...</span>
 </code></pre></div></div>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">normal_distribution</code>을 통해 정규 분포된 값을 생성할 수 있음</li>
 </ul>
 
 <h3 id="실수-균등-분포-생성">실수 균등 분포 생성</h3>
+
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;random&gt;</span><span class="cp">
 </span>
 <span class="c1">// ...</span>
@@ -389,11 +397,13 @@
 	<span class="k">auto</span> <span class="n">num</span> <span class="o">=</span> <span class="n">dis</span><span class="p">(</span><span class="n">gen</span><span class="p">);</span> <span class="c1">// double 타입의 값을 return 함</span>
 <span class="c1">// ...</span>
 </code></pre></div></div>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">uniform_real_distribution</code>을 통해 균등 분포 된 실수 값을 생성할 수 있음</li>
 </ul>
 
 <h3 id="실수-정규-분포-생성">실수 정규 분포 생성</h3>
+
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;random&gt;</span><span class="cp">
 </span>
 <span class="c1">// ...</span>
@@ -406,6 +416,7 @@
 	<span class="k">auto</span> <span class="n">num</span> <span class="o">=</span> <span class="n">dis</span><span class="p">(</span><span class="n">gen</span><span class="p">);</span> <span class="c1">// double 타입의 값을 return 함</span>
 <span class="c1">// ...</span>
 </code></pre></div></div>
+
 <ul>
   <li><code class="language-plaintext highlighter-rouge">normal_distribution</code>의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음</li>
 </ul>
@@ -465,7 +476,7 @@
       
   <nav class="pagination">
     
-      <a href="#" class="pagination--pager disabled">Previous</a>
+      <a href="/c++/smart-pointer/" class="pagination--pager" title="스마트 포인터 순환 참조 문제">Previous</a>
     
     
       <a href="/test/sample/" class="pagination--pager" title="Sample">Next</a>
@@ -532,7 +543,174 @@
   Sample Post
 
 
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "hello world!\n";
+}
+
 </p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/smart-pointer/" rel="permalink">스마트 포인터 순환 참조 문제
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-12-27T00:00:00+00:00">2025-12-27</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다
+
+
+
+  개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다
+  메모리가 해제되지 못하고 끝까지 남아있...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/asio-warning/" rel="permalink">Boost.asio async 사용 및 주의점
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-12-06T00:00:00+00:00">2024-12-06</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Boost.Asio async_write
+
+
+  
+    Boost.Asio 라이브러리의 async_write를 사용하는 방법은 다음과 같음
+
+    
+      boost::asio::async_write(s, boost::asio::buffer(data, size), handl...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/unity/fmod-gitignore/" rel="permalink">FMOD Unity .gitignore
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2024-11-13T00:00:00+00:00">2024-11-13</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          less than 1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  참고 : FMOD .gitignore
+
+
+
+  FMOD 프로젝트를 Github에 올리고 관리하기 위해서 추적하는 파일들을 보니 너무 많고 올리지 않아도 되는 파일들이 딸려 들어오는것을 보게 되었다.
+  바로 gitignore 파일이 있는지 확인 해 보았고 위 참고 사이트에서 ...</p>
   </article>
 </div>
 
