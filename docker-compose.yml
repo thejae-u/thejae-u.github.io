@@ -1,0 +1,25 @@
+services:
+  jekyll:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # 필요하면 아래 주석 해제해서 항상 amd64로 강제 (Apple Silicon에서 x86 에뮬레이션)
+      # platforms:
+      #   - linux/amd64
+    # 또는 이미 빌드한 이미지를 직접 지정해도 됨:
+    # image: thejaeu-blog:latest
+    ports:
+      - "4000:4000"
+    volumes:
+      # 현재 디렉터리를 컨테이너에 마운트해서 라이브 리로드
+      - .:/usr/src/app
+    environment:
+      # 파일 퍼미션 문제 줄이려면 UID/GID 조정 (옵션)
+      - JEKYLL_ENV=development
+    command: >
+      bundle exec jekyll serve
+      --host 0.0.0.0
+      --watch
+      --force_polling
+      --livereload
+

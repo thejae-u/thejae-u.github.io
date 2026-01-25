@@ -1,0 +1,19 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+search: false
+---
+
+@charset "utf-8";
+
+@import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
+@import "minimal-mistakes"; // main partials
+
+.author__avatar img,
+.page__content img.profile-img {
+  width: 100px !important;     /* 원하는 원형 크기 (px) */
+  height: 100px !important;    /* width와 동일하게 */
+  object-fit: cover;           /* 사진이 잘리면서도 비율 유지 */
+  border-radius: 50% !important;
+  object-position: center;     /* 중앙 정렬 */
+}
+
