@@ -15,6 +15,7 @@
     {% if site.comments.utterances.label %}script.setAttribute('label', '{{ site.comments.utterances.label }}');{% endif %}
     script.setAttribute('theme', '{{ site.comments.utterances.theme | default: "github-light" }}');
     script.setAttribute('crossorigin', 'anonymous');
+    script.setAttribute('async', '');
 
     commentContainer.appendChild(script);
   })();
