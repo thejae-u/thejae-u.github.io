@@ -20,7 +20,7 @@ title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "김재우(thejaeu)"
 description              : "Game Server Programmer"
-url                      : "https://thejaeu.com" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+url                      : "https://thejaeu.com/" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "thejae-u/thejae-u.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
@@ -117,7 +117,7 @@ author:
       url: "mailto:contact@thejaeu.com"
     - label: "Website"
       icon: "fas fa-fw fa-link"
-      url: "https://thejaeu.com"
+      url: "/about/"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       # url: "https://twitter.com/"
@@ -142,7 +142,7 @@ footer:
       # url:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
-      # url:
+      url: "https://github.com/thejae-u"
     - label: "GitLab"
       icon: "fab fa-fw fa-gitlab"
       # url:
@@ -151,7 +151,7 @@ footer:
       # url:
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
-      # url:
+      # url: 
   since: "2020"
 
 
@@ -218,8 +218,6 @@ kramdown:
 sass:
   sass_dir: _sass
   style: compressed # https://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
-  
-
 
 # Outputting
 permalink: /:categories/:title/
