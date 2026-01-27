@@ -74,6 +74,8 @@
 
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
 
+ <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
 <!-- end custom head snippets -->
 
   </head>
@@ -193,7 +195,16 @@
   오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다
 
 
-</p>
+기본 사용
+
+#include &lt;random&gt;
+
+// ...
+
+std::random_device seed;
+std::mt19937 generator(seed());
+
+auto rNumber ...</p>
   </article>
 </div>
 
