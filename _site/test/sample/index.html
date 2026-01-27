@@ -451,11 +451,7 @@
   </p>
 
 
-    <p class="archive__item-excerpt" itemprop="description">
-  오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다
-
-
-기본 사용
+    <p class="archive__item-excerpt" itemprop="description">기본 사용
 
 #include &lt;random&gt;
 
@@ -464,7 +460,13 @@
 std::random_device seed;
 std::mt19937 generator(seed());
 
-auto rNumber ...</p>
+auto rNumber = generator();
+
+// ...
+
+
+
+  &lt;random&gt; 헤더를...</p>
   </article>
 </div>
 
@@ -512,12 +514,14 @@ auto rNumber ...</p>
 
 
     <p class="archive__item-excerpt" itemprop="description">
-  오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다
-
-
-
   개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다
-  메모리가 해제되지 못하고 끝까지 남아있...</p>
+  메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다
+
+
+문제점
+
+
+  shared_ptr...</p>
   </article>
 </div>
 

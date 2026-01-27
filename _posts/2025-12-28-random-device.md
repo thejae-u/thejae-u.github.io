@@ -5,8 +5,6 @@ categories: [C++]
 tags: [c++, cpp, random_device, mt19937]
 ---
 
-> 오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다
-
 ## 기본 사용
 
 ```cpp

@@ -11,7 +11,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>C++ random_device - Thejaeu Dev-log</title>
-<meta name="description" content="오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다   기본 사용  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed());  auto rNumber = generator();  // ...      &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함   mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨   random number distribution  정수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨  // ...       uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음   정수 정규 분포 생성  ```cpp #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨  // ...      normal_distribution을 통해 정규 분포된 값을 생성할 수 있음   실수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음   실수 정규 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
+<meta name="description" content="기본 사용  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed());  auto rNumber = generator();  // ...      &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함   mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨   random number distribution  정수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨  // ...       uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음   정수 정규 분포 생성  ```cpp #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨  // ...      normal_distribution을 통해 정규 분포된 값을 생성할 수 있음   실수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음   실수 정규 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
 
 
   <meta name="author" content="김재우(thejaeu)">
@@ -27,7 +27,7 @@
 <meta property="og:url" content="http://0.0.0.0:4000/c++/random-device/">
 
 
-  <meta property="og:description" content="오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다   기본 사용  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed());  auto rNumber = generator();  // ...      &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함   mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨   random number distribution  정수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨  // ...       uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음   정수 정규 분포 생성  ```cpp #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨  // ...      normal_distribution을 통해 정규 분포된 값을 생성할 수 있음   실수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음   실수 정규 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
+  <meta property="og:description" content="기본 사용  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed());  auto rNumber = generator();  // ...      &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함   mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨   random number distribution  정수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨  // ...       uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음   정수 정규 분포 생성  ```cpp #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨  // ...      normal_distribution을 통해 정규 분포된 값을 생성할 수 있음   실수 균등 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음   실수 정규 분포 생성  #include &lt;random&gt;  // ...  std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8  for(int i=0;i&lt;100;++i) 	auto num = dis(gen); // double 타입의 값을 return 함 // ...      normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
 
 
 
@@ -274,7 +274,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="C++ random_device">
-    <meta itemprop="description" content="  오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다기본 사용#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());auto rNumber = generator();// ...  &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함  mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨random number distribution정수 균등 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100for(int i=0;i&lt;100;++i)	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨// ...  uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음정수 정규 분포 생성```cpp#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10for(int i=0;i&lt;100;++i)	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨// ...  normal_distribution을 통해 정규 분포된 값을 생성할 수 있음실수 균등 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100for(int i=0;i&lt;100;++i)	auto num = dis(gen); // double 타입의 값을 return 함// ...  uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음실수 정규 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8for(int i=0;i&lt;100;++i)	auto num = dis(gen); // double 타입의 값을 return 함// ...  normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
+    <meta itemprop="description" content="기본 사용#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());auto rNumber = generator();// ...  &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함  mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨random number distribution정수 균등 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100for(int i=0;i&lt;100;++i)	auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨// ...  uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음정수 정규 분포 생성```cpp#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10for(int i=0;i&lt;100;++i)	auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨// ...  normal_distribution을 통해 정규 분포된 값을 생성할 수 있음실수 균등 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100for(int i=0;i&lt;100;++i)	auto num = dis(gen); // double 타입의 값을 return 함// ...  uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음실수 정규 분포 생성#include &lt;random&gt;// ...std::random_device seed;std::mt19937 generator(seed());std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8for(int i=0;i&lt;100;++i)	auto num = dis(gen); // double 타입의 값을 return 함// ...  normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음">
     <meta itemprop="datePublished" content="2025-12-28T00:00:00+00:00">
     
 
@@ -318,11 +318,7 @@
 
       <section class="page__content" itemprop="text">
         
-        <blockquote>
-  <p>오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다</p>
-</blockquote>
-
-<h2 id="기본-사용">기본 사용</h2>
+        <h2 id="기본-사용">기본 사용</h2>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;random&gt;</span><span class="cp">
 </span>
@@ -607,12 +603,14 @@ int main()
 
 
     <p class="archive__item-excerpt" itemprop="description">
-  오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다
-
-
-
   개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다
-  메모리가 해제되지 못하고 끝까지 남아있...</p>
+  메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다
+
+
+문제점
+
+
+  shared_ptr...</p>
   </article>
 </div>
 

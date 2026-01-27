@@ -12,13 +12,13 @@ var store = [{
         "teaser": null
       },{
         "title": "스마트 포인터 순환 참조 문제",
-        "excerpt":"오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다 개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다 메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다 문제점 shared_ptr은 하나의 메모리를 여러 객체가 공유하고자 할 때 사용할 수 있음 당연하게도 A라는 클래스에...","categories": ["C++"],
+        "excerpt":"개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다 메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다 문제점 shared_ptr은 하나의 메모리를 여러 객체가 공유하고자 할 때 사용할 수 있음 당연하게도 A라는 클래스에 대한 shared_ptr을 B라는 클래스의 객체가 소유할...","categories": ["C++"],
         "tags": ["C++","스마트포인터","memory","순환참조"],
         "url": "/c++/smart-pointer/",
         "teaser": null
       },{
         "title": "C++ random_device",
-        "excerpt":"오류 사항은 contact@thejaeu.com 으로 보내주시기 바랍니다 기본 사용 #include &lt;random&gt; // ... std::random_device seed; std::mt19937 generator(seed()); auto rNumber = generator(); // ... &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함 mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨 random number distribution 정수 균등 분포...","categories": ["C++"],
+        "excerpt":"기본 사용 #include &lt;random&gt; // ... std::random_device seed; std::mt19937 generator(seed()); auto rNumber = generator(); // ... &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함 mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨 random number distribution 정수 균등 분포 생성 #include &lt;random&gt; // ... std::random_device...","categories": ["C++"],
         "tags": ["c++","cpp","random_device","mt19937"],
         "url": "/c++/random-device/",
         "teaser": null
