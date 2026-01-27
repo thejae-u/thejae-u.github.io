@@ -1,0 +1,873 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.27.3 by Michael Rose
+  Copyright 2013-2025 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="kr-ko" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Tag Dispatching과 Passkey Idiom - Thejaeu Dev-log</title>
+<meta name="description" content="Tag Dispatching  정의     C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴   함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함   예시  #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt;  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { 	std::cout &lt;&lt; &quot;O(1) Access\n&quot;; 	it += n; }  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { 	std::cout &lt;&lt; &quot;O(N) Access\n&quot;; 	for (int i = 0; i &lt; n; ++i) 		++it; }  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); }   int main() { 	std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; 	auto vIt = v.begin();  	Func(vIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *vIt &lt;&lt; &#39;\n&#39;;  	std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; 	auto lIt = l.begin();  	Func(lIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *lIt &lt;&lt; &#39;\n&#39;; }      FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음   컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨   결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨   C++ 17  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) 	{ 		it += n; 	} 	else 	{ 		for(int i = 0; i &lt; n; ++i) 			++it; 	} }      C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음   태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다   Passkey Idiom (private tag)  사용방법     스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나   class A { private: 	struct SecretKey {}; public: 	explicit A(SecretKey) 	{ 		std::cout &lt;&lt; &quot;Make A by Secret Key\n&quot;; 	}  	static auto Create() 	{ 		auto newA = std::make_shared&lt;A&gt;(SecretKey{}); 		return newA; 	}  private:  };  int main() { 	auto validA = A::Create(); // 정상 작동 	auto invalidA = new A(); // 컴파일 에러 }      생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함   사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음   주의점     스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음   이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함   결론     따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함">
+
+
+  <meta name="author" content="김재우(thejaeu)">
+  
+  <meta property="article:author" content="김재우(thejaeu)">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="kr_ko">
+<meta property="og:site_name" content="Thejaeu Dev-log">
+<meta property="og:title" content="Tag Dispatching과 Passkey Idiom">
+<meta property="og:url" content="http://0.0.0.0:4000/c++/tag-dispatching-passkey/">
+
+
+  <meta property="og:description" content="Tag Dispatching  정의     C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴   함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함   예시  #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt;  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { 	std::cout &lt;&lt; &quot;O(1) Access\n&quot;; 	it += n; }  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { 	std::cout &lt;&lt; &quot;O(N) Access\n&quot;; 	for (int i = 0; i &lt; n; ++i) 		++it; }  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); }   int main() { 	std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; 	auto vIt = v.begin();  	Func(vIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *vIt &lt;&lt; &#39;\n&#39;;  	std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; 	auto lIt = l.begin();  	Func(lIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *lIt &lt;&lt; &#39;\n&#39;; }      FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음   컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨   결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨   C++ 17  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) 	{ 		it += n; 	} 	else 	{ 		for(int i = 0; i &lt; n; ++i) 			++it; 	} }      C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음   태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다   Passkey Idiom (private tag)  사용방법     스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나   class A { private: 	struct SecretKey {}; public: 	explicit A(SecretKey) 	{ 		std::cout &lt;&lt; &quot;Make A by Secret Key\n&quot;; 	}  	static auto Create() 	{ 		auto newA = std::make_shared&lt;A&gt;(SecretKey{}); 		return newA; 	}  private:  };  int main() { 	auto validA = A::Create(); // 정상 작동 	auto invalidA = new A(); // 컴파일 에러 }      생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함   사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음   주의점     스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음   이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함   결론     따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2026-01-11T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://0.0.0.0:4000/c++/tag-dispatching-passkey/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Thejaeu Dev-log Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  window.enable_copy_code_button = true;
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+ <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide" dir="ltr">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Thejaeu Dev-log
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >About</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/posts/"
+                
+                
+              >Posts</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/categories/"
+                
+                
+              >Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="http://0.0.0.0:4000/">
+        <img src="/assets/images/profile.jpg" alt="김재우(thejaeu)" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://0.0.0.0:4000/" itemprop="url">김재우(thejaeu)</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p><strong>Game Server Developer</strong></p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name" class="p-locality">Seoul/Korea</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@thejaeu.com" rel="nofollow noopener noreferrer me"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="/about/" rel="nofollow noopener noreferrer me"><i class="fas fa-fw fa-link" aria-hidden="true"></i><span class="label">Website</span></a></li>
+          
+        
+          
+        
+          
+        
+          
+            <li><a href="https://github.com/thejae-u" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/thejaeu" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Tag Dispatching과 Passkey Idiom">
+    <meta itemprop="description" content="Tag Dispatching정의  C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴  함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함예시#include &lt;iostream&gt;#include &lt;vector&gt;#include &lt;list&gt;#include &lt;iterator&gt;template &lt;typename Iter&gt;void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag){	std::cout &lt;&lt; &quot;O(1) Access\n&quot;;	it += n;}template &lt;typename Iter&gt;void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag){	std::cout &lt;&lt; &quot;O(N) Access\n&quot;;	for (int i = 0; i &lt; n; ++i)		++it;}template &lt;typename Iter&gt;void Func(Iter&amp; it, int n){	FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {});}int main(){	std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 };	auto vIt = v.begin();	Func(vIt, 3);	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *vIt &lt;&lt; &#39;\n&#39;;	std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 };	auto lIt = l.begin();	Func(lIt, 3);	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *lIt &lt;&lt; &#39;\n&#39;;}  FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음  컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨  결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨C++ 17template &lt;typename Iter&gt;void Func(Iter&amp; it, int n){	if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;)	{		it += n;	}	else	{		for(int i = 0; i &lt; n; ++i)			++it;	}}  C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음  태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다Passkey Idiom (private tag)사용방법  스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나class A{private:	struct SecretKey {};public:	explicit A(SecretKey)	{		std::cout &lt;&lt; &quot;Make A by Secret Key\n&quot;;	}	static auto Create()	{		auto newA = std::make_shared&lt;A&gt;(SecretKey{});		return newA;	}private:};int main(){	auto validA = A::Create(); // 정상 작동	auto invalidA = new A(); // 컴파일 에러}  생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함  사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음주의점  스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음  이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함결론  따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함">
+    <meta itemprop="datePublished" content="2026-01-11T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://0.0.0.0:4000/c++/tag-dispatching-passkey/" itemprop="url">Tag Dispatching과 Passkey Idiom
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-11T00:00:00+00:00">2026-01-11</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <h2 id="tag-dispatching">Tag Dispatching</h2>
+
+<h3 id="정의">정의</h3>
+
+<ul>
+  <li>C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴</li>
+  <li>함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함</li>
+</ul>
+
+<h3 id="예시">예시</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;list&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;iterator&gt;</span><span class="cp">
+</span>
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">FuncImpl</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">random_access_iterator_tag</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"O(1) Access</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+	<span class="n">it</span> <span class="o">+=</span> <span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="n">FuncImpl</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">bidirectional_iterator_tag</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"O(N) Access</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="o">++</span><span class="n">it</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="n">Func</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">FuncImpl</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">typename</span> <span class="n">std</span><span class="o">::</span><span class="n">iterator_traits</span><span class="o">&lt;</span><span class="n">Iter</span><span class="o">&gt;::</span><span class="n">iterator_category</span> <span class="p">{});</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span> <span class="p">};</span>
+	<span class="k">auto</span> <span class="n">vIt</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+
+	<span class="n">Func</span><span class="p">(</span><span class="n">vIt</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"value: "</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">vIt</span> <span class="o">&lt;&lt;</span> <span class="sc">'\n'</span><span class="p">;</span>
+
+	<span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">l</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span> <span class="p">};</span>
+	<span class="k">auto</span> <span class="n">lIt</span> <span class="o">=</span> <span class="n">l</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+
+	<span class="n">Func</span><span class="p">(</span><span class="n">lIt</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"value: "</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">lIt</span> <span class="o">&lt;&lt;</span> <span class="sc">'\n'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">FuncImpl</code>에서 <code class="language-plaintext highlighter-rouge">std::random_access_iterator_tag</code>나 <code class="language-plaintext highlighter-rouge">std::bidirectional_iterator_tag</code>와 같은 빈 구조체를 매개변수로 받음</li>
+  <li>컴파일 시점에 <code class="language-plaintext highlighter-rouge">iterator_traits&lt;Iter&gt;::iterator_category{}</code>를 통해 타입에 대한 함수가 연결됨</li>
+  <li>결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨</li>
+</ul>
+
+<h3 id="c-17">C++ 17</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Func</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="k">constexpr</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">std</span><span class="o">::</span><span class="n">iterator_traits</span><span class="o">&lt;</span><span class="n">Iter</span><span class="o">&gt;::</span><span class="n">iterator_category</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">random_access_iterator_tag</span><span class="o">&gt;</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">it</span> <span class="o">+=</span> <span class="n">n</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">else</span>
+	<span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+			<span class="o">++</span><span class="n">it</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 <code class="language-plaintext highlighter-rouge">if constexpr</code>을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음</li>
+  <li>태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다</li>
+</ul>
+
+<h2 id="passkey-idiom-private-tag">Passkey Idiom (private tag)</h2>
+
+<h3 id="사용방법">사용방법</h3>
+
+<ul>
+  <li>스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="nl">private:</span>
+	<span class="k">struct</span> <span class="nc">SecretKey</span> <span class="p">{};</span>
+<span class="nl">public:</span>
+	<span class="k">explicit</span> <span class="n">A</span><span class="p">(</span><span class="n">SecretKey</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Make A by Secret Key</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">static</span> <span class="k">auto</span> <span class="n">Create</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">auto</span> <span class="n">newA</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span><span class="p">(</span><span class="n">SecretKey</span><span class="p">{});</span>
+		<span class="k">return</span> <span class="n">newA</span><span class="p">;</span>
+	<span class="p">}</span>
+
+<span class="nl">private:</span>
+
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="k">auto</span> <span class="n">validA</span> <span class="o">=</span> <span class="n">A</span><span class="o">::</span><span class="n">Create</span><span class="p">();</span> <span class="c1">// 정상 작동</span>
+	<span class="k">auto</span> <span class="n">invalidA</span> <span class="o">=</span> <span class="k">new</span> <span class="n">A</span><span class="p">();</span> <span class="c1">// 컴파일 에러</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>생성자는 Tag용 빈 구조체 <code class="language-plaintext highlighter-rouge">SecretKey</code>을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함</li>
+  <li>사용자는 <code class="language-plaintext highlighter-rouge">A</code>클래스의 <code class="language-plaintext highlighter-rouge">Create</code>함수만을 통해 <code class="language-plaintext highlighter-rouge">A</code>객체를 생성할 수 있음</li>
+</ul>
+
+<h3 id="주의점">주의점</h3>
+
+<ul>
+  <li>스마트 포인터의 <code class="language-plaintext highlighter-rouge">make_shared</code>, <code class="language-plaintext highlighter-rouge">make_unique</code>는 <code class="language-plaintext highlighter-rouge">A</code> 클래스에 대해 외부 함수이므로 <code class="language-plaintext highlighter-rouge">new</code> 호출을 통해 포인터를 생성하도록 설계되어 있음</li>
+  <li>이때, <code class="language-plaintext highlighter-rouge">A</code>클래스의 생성자를 <code class="language-plaintext highlighter-rouge">private</code>영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함</li>
+</ul>
+
+<h3 id="결론">결론</h3>
+
+<ul>
+  <li>따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함</li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#c" class="page__taxonomy-item p-category" rel="tag">c++</a><span class="sep">, </span>
+    
+      <a href="/tags/#cpp" class="page__taxonomy-item p-category" rel="tag">cpp</a><span class="sep">, </span>
+    
+      <a href="/tags/#passkey-idiom" class="page__taxonomy-item p-category" rel="tag">passkey idiom</a><span class="sep">, </span>
+    
+      <a href="/tags/#private-tag" class="page__taxonomy-item p-category" rel="tag">private tag</a><span class="sep">, </span>
+    
+      <a href="/tags/#tag-dispatching" class="page__taxonomy-item p-category" rel="tag">tag dispatching</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#c" class="page__taxonomy-item p-category" rel="tag">C++</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2026-01-11T00:00:00+00:00">2026-01-11</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/test/sample/" class="pagination--pager" title="Sample">Previous</a>
+    
+    
+      <a href="/c++/std-forward/" class="pagination--pager" title="핸들러의 완벽한 전달 std::forward">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+      
+        <p>
+          Comments are configured with provider: <strong>utterances</strong>,
+          but are disabled in non-production environments.
+        </p>
+      
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You May Also Enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/std-forward/" rel="permalink">핸들러의 완벽한 전달 std::forward
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-15T00:00:00+00:00">2026-01-15</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">std::forward
+
+
+  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
+  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/test/sample/" rel="permalink">Sample
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-01T00:00:00+00:00">2026-01-01</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          less than 1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  Sample Post
+
+
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "hello world!\n";
+}
+
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/random-device/" rel="permalink">C++ random_device
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-12-28T00:00:00+00:00">2025-12-28</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">기본 사용
+
+#include &lt;random&gt;
+
+// ...
+
+std::random_device seed;
+std::mt19937 generator(seed());
+
+auto rNumber = generator();
+
+// ...
+
+
+
+  &lt;random&gt; 헤더를...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/smart-pointer/" rel="permalink">스마트 포인터 순환 참조 문제
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-12-27T00:00:00+00:00">2025-12-27</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다
+  메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다
+
+
+문제점
+
+
+  shared_ptr...</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        
+
+<div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+      
+        
+      
+        
+          <li><a href="https://github.com/thejae-u" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+
+<div class="page__footer-copyright">&copy; 2020 - 2026 <a href="http://0.0.0.0:4000">Thejaeu Dev-log</a>. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/jekyll-themes/minimal-mistakes/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+    <script>
+  'use strict';
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'thejae-u/thejae-u.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+    script.setAttribute('theme', 'dark-blue');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.setAttribute('async', '');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+  </body>
+</html>

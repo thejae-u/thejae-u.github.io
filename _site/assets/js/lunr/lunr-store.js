@@ -11,6 +11,12 @@ var store = [{
         "url": "/c++/asio-warning/",
         "teaser": null
       },{
+        "title": "lvalue와 rvalue",
+        "excerpt":"lvalue 메모리 주소가 존재하며 식별자가 있는 표현식 참조나 대입이 가능, &amp;연산자로 주소를 가져올 수 있음 변수 이름, 배열요소, 반환값이 참조형인 함수 등은 lvalue의 대표적인 예시임 int x = 10; // x -&gt; lvalue int* p = &amp;x; // x의 주소를 받아 올 수 있음 rvalue 메모리 주소가 없거나 사용자가 접근할...","categories": ["C++"],
+        "tags": ["lvalue","rvalue","c++","cpp"],
+        "url": "/c++/lvalue-rvalue/",
+        "teaser": null
+      },{
         "title": "스마트 포인터 순환 참조 문제",
         "excerpt":"개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다 메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다 문제점 shared_ptr은 하나의 메모리를 여러 객체가 공유하고자 할 때 사용할 수 있음 당연하게도 A라는 클래스에 대한 shared_ptr을 B라는 클래스의 객체가 소유할...","categories": ["C++"],
         "tags": ["C++","스마트포인터","memory","순환참조"],
@@ -27,5 +33,17 @@ var store = [{
         "excerpt":"   Sample Post   #include &lt;iostream&gt;  int main() {     std::cout &lt;&lt; \"hello world!\\n\"; }  ","categories": ["Test"],
         "tags": ["Test","First"],
         "url": "/test/sample/",
+        "teaser": null
+      },{
+        "title": "Tag Dispatching과 Passkey Idiom",
+        "excerpt":"Tag Dispatching 정의 C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴 함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함 예시 #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt; template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) {...","categories": ["C++"],
+        "tags": ["tag dispatching","passkey idiom","c++","cpp","private tag"],
+        "url": "/c++/tag-dispatching-passkey/",
+        "teaser": null
+      },{
+        "title": "핸들러의 완벽한 전달 std::forward",
+        "excerpt":"std::forward std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수 std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-value, r-value)를 보존하여 다시 넘겨주는 함수 L-Value로 들어왔으면 L-Value로, R-Value로 들어왔으면 R-Value로 캐스팅 됨 기본 형태 template &lt;typename T, typename... Args&gt; void wrapper(T&amp;&amp; t, Args&amp;&amp;... args) {...","categories": ["C++"],
+        "tags": ["forward","handler","c++","cpp","move"],
+        "url": "/c++/std-forward/",
         "teaser": null
       }]

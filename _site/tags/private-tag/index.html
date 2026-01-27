@@ -10,7 +10,7 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>C++ - Thejaeu Dev-log</title>
+<!-- begin _includes/seo.html --><title>private tag - Thejaeu Dev-log</title>
 <meta name="description" content="Game Server Programmer">
 
 
@@ -21,8 +21,8 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="kr_ko">
 <meta property="og:site_name" content="Thejaeu Dev-log">
-<meta property="og:title" content="C++">
-<meta property="og:url" content="http://0.0.0.0:4000/categories/c/">
+<meta property="og:title" content="private tag">
+<meta property="og:url" content="http://0.0.0.0:4000/tags/private-tag/">
 
 
   <meta property="og:description" content="Game Server Programmer">
@@ -38,7 +38,7 @@
 
 
 
-<link rel="canonical" href="http://0.0.0.0:4000/categories/c/">
+<link rel="canonical" href="http://0.0.0.0:4000/tags/private-tag/">
 
 
 
@@ -147,58 +147,8 @@
 
   <div class="archive">
     
-      <h1 id="page-title" class="page__title">C++</h1>
+      <h1 id="page-title" class="page__title">private tag</h1>
     
-    
-      
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/std-forward/" rel="permalink">핸들러의 완벽한 전달 std::forward
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2026-01-15T00:00:00+00:00">2026-01-15</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">std::forward
-
-
-  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
-  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
-  </article>
-</div>
-
     
       
 
@@ -253,229 +203,6 @@
 예시
 
 #...</p>
-  </article>
-</div>
-
-    
-      
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/random-device/" rel="permalink">C++ random_device
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2025-12-28T00:00:00+00:00">2025-12-28</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">기본 사용
-
-#include &lt;random&gt;
-
-// ...
-
-std::random_device seed;
-std::mt19937 generator(seed());
-
-auto rNumber = generator();
-
-// ...
-
-
-
-  &lt;random&gt; 헤더를...</p>
-  </article>
-</div>
-
-    
-      
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/smart-pointer/" rel="permalink">스마트 포인터 순환 참조 문제
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2025-12-27T00:00:00+00:00">2025-12-27</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">
-  개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다
-  메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다
-
-
-문제점
-
-
-  shared_ptr...</p>
-  </article>
-</div>
-
-    
-      
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/lvalue-rvalue/" rel="permalink">lvalue와 rvalue
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2025-12-15T00:00:00+00:00">2025-12-15</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">lvalue
-
-
-  메모리 주소가 존재하며 식별자가 있는 표현식
-  참조나 대입이 가능, &amp;연산자로 주소를 가져올 수 있음
-  변수 이름, 배열요소, 반환값이 참조형인 함수 등은 lvalue의 대표적인 예시임
-
-
-int x = 10; // x -&gt; lvalue
-int*...</p>
-  </article>
-</div>
-
-    
-      
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/asio-warning/" rel="permalink">Boost.asio async 사용 및 주의점
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2024-12-06T00:00:00+00:00">2024-12-06</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">Boost.Asio async_write
-
-
-  
-    Boost.Asio 라이브러리의 async_write를 사용하는 방법은 다음과 같음
-
-    
-      boost::asio::async_write(s, boost::asio::buffer(data, size), handl...</p>
   </article>
 </div>
 

@@ -1,4 +1,214 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-01-27T08:23:16+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">Sample</title><link href="http://0.0.0.0:4000/test/sample/" rel="alternate" type="text/html" title="Sample" /><published>2026-01-01T00:00:00+00:00</published><updated>2026-01-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/test/sample</id><content type="html" xml:base="http://0.0.0.0:4000/test/sample/"><![CDATA[<ul>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-01-27T14:44:56+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">핸들러의 완벽한 전달 std::forward</title><link href="http://0.0.0.0:4000/c++/std-forward/" rel="alternate" type="text/html" title="핸들러의 완벽한 전달 std::forward" /><published>2026-01-15T00:00:00+00:00</published><updated>2026-01-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/std-forward</id><content type="html" xml:base="http://0.0.0.0:4000/c++/std-forward/"><![CDATA[<h2 id="stdforward">std::forward</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">std::move</code>는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수</li>
+  <li><code class="language-plaintext highlighter-rouge">std::forward</code>는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-value, r-value)를 보존하여 다시 넘겨주는 함수
+    <ul>
+      <li>L-Value로 들어왔으면 L-Value로, R-Value로 들어왔으면 R-Value로 캐스팅 됨</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="기본-형태">기본 형태</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">,</span> <span class="k">typename</span><span class="o">...</span> <span class="nc">Args</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;&amp;</span> <span class="n">t</span><span class="p">,</span> <span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">callee</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t</span><span class="p">),</span>
+           <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>L-Value 인자가 들어오면 <code class="language-plaintext highlighter-rouge">T</code>는 <code class="language-plaintext highlighter-rouge">T&amp;</code>로 추론되며 <code class="language-plaintext highlighter-rouge">std::forward&lt;T&gt;(t)</code>는 L-Value로 캐스팅 됨</li>
+  <li>R-Value 인자가 들어오면 <code class="language-plaintext highlighter-rouge">T</code>는 그대로 <code class="language-plaintext highlighter-rouge">T</code>로 추론되며 <code class="language-plaintext highlighter-rouge">std::forward&lt;T&gt;(t)</code>는 R-Value로 캐스팅 됨</li>
+</ul>
+
+<h2 id="대표적인-예시">대표적인 예시</h2>
+
+<ul>
+  <li>래퍼/팩토리/헬퍼 함수에서 인자를 있는 그대로 다른 함수/생성자에게 넘길 때
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">,</span> <span class="k">typename</span><span class="o">...</span> <span class="nc">Args</span><span class="p">&gt;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">make_ptr</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span>
+        <span class="k">new</span> <span class="n">T</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...)</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>컨테이너의 <code class="language-plaintext highlighter-rouge">emplace</code>
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span><span class="o">...</span> <span class="nc">Args</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">emplace_back</span><span class="p">(</span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">new</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">storage</span><span class="p">[</span><span class="n">size</span><span class="p">])</span> <span class="n">T</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
+    <span class="o">++</span><span class="n">size</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// forward를 통해 l-value 인자는 복사, r-value 인자는 이동이 됨</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="핸들러의-완벽한-전달">핸들러의 완벽한 전달</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ContextManager.h</span>
+<span class="k">class</span> <span class="nc">ContextManager</span>
+<span class="p">{</span>
+<span class="c1">// ...</span>
+<span class="nl">public:</span>
+	<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">CompletionHandler</span><span class="p">&gt;</span>
+	<span class="k">auto</span> <span class="n">RegisterWork</span><span class="p">(</span><span class="n">CompletionHandler</span> <span class="n">handler</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">asio</span><span class="o">::</span><span class="n">post</span><span class="p">(</span><span class="n">_io</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">CompletionHandler</span><span class="o">&gt;</span><span class="p">(</span><span class="n">handler</span><span class="p">));</span>
+	<span class="p">}</span>
+<span class="c1">// ...</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<ul>
+  <li>Asio 라이브러리를 사용하면서 <code class="language-plaintext highlighter-rouge">io_context</code>에 대한 래퍼 클래스를 통해 <code class="language-plaintext highlighter-rouge">post</code>함수를 <code class="language-plaintext highlighter-rouge">RegisterWork</code>로 제공하면서 기존의 <code class="language-plaintext highlighter-rouge">asio.post</code>를 사용하는 것과 동일하게 핸들러를 전달하도록 하기위해 <code class="language-plaintext highlighter-rouge">std::forward</code>를 사용하여 호출 당시 핸들러 함수를 그대로 <code class="language-plaintext highlighter-rouge">asio.post</code>에 전달하도록 함</li>
+</ul>
+
+<h2 id="주의점">주의점</h2>
+
+<ul>
+  <li>보편 참조(Universal Reference)가 아닌 평범한 인자에는 <code class="language-plaintext highlighter-rouge">std::forward</code>를 사용하지 않음
+    <ul>
+      <li>템플릿 인자에만 사용하는것이 원칙</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">std::forward&lt;T&gt;(val)</code>에서 <code class="language-plaintext highlighter-rouge">T</code>는 반드시 함수 템플릿 형식의 인자여야 하며, 호출 시 그대로 전달해야 함</li>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="forward" /><category term="handler" /><category term="c++" /><category term="cpp" /><category term="move" /><summary type="html"><![CDATA[std::forward std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수 std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-value, r-value)를 보존하여 다시 넘겨주는 함수 L-Value로 들어왔으면 L-Value로, R-Value로 들어왔으면 R-Value로 캐스팅 됨 기본 형태 template &lt;typename T, typename... Args&gt; void wrapper(T&amp;&amp; t, Args&amp;&amp;... args) { callee(std::forward&lt;T&gt;(t), std::forward&lt;Args&gt;(args)...); } L-Value 인자가 들어오면 T는 T&amp;로 추론되며 std::forward&lt;T&gt;(t)는 L-Value로 캐스팅 됨 R-Value 인자가 들어오면 T는 그대로 T로 추론되며 std::forward&lt;T&gt;(t)는 R-Value로 캐스팅 됨 대표적인 예시 래퍼/팩토리/헬퍼 함수에서 인자를 있는 그대로 다른 함수/생성자에게 넘길 때 template &lt;typename T, typename... Args&gt; std::unique_ptr&lt;T&gt; make_ptr(Args&amp;&amp;... args) { return std::unique_ptr&lt;T&gt;( new T(std::forward&lt;Args&gt;(args)...) ); } 컨테이너의 emplace template &lt;typename... Args&gt; void emplace_back(Args&amp;&amp;... args) { new (&amp;storage[size]) T(std::forward&lt;Args&gt;(args)...); ++size; } // forward를 통해 l-value 인자는 복사, r-value 인자는 이동이 됨 핸들러의 완벽한 전달 // ContextManager.h class ContextManager { // ... public: template &lt;typename CompletionHandler&gt; auto RegisterWork(CompletionHandler handler) { asio::post(_io, std::forward&lt;CompletionHandler&gt;(handler)); } // ... }; Asio 라이브러리를 사용하면서 io_context에 대한 래퍼 클래스를 통해 post함수를 RegisterWork로 제공하면서 기존의 asio.post를 사용하는 것과 동일하게 핸들러를 전달하도록 하기위해 std::forward를 사용하여 호출 당시 핸들러 함수를 그대로 asio.post에 전달하도록 함 주의점 보편 참조(Universal Reference)가 아닌 평범한 인자에는 std::forward를 사용하지 않음 템플릿 인자에만 사용하는것이 원칙 std::forward&lt;T&gt;(val)에서 T는 반드시 함수 템플릿 형식의 인자여야 하며, 호출 시 그대로 전달해야 함]]></summary></entry><entry><title type="html">Tag Dispatching과 Passkey Idiom</title><link href="http://0.0.0.0:4000/c++/tag-dispatching-passkey/" rel="alternate" type="text/html" title="Tag Dispatching과 Passkey Idiom" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/tag-dispatching-passkey</id><content type="html" xml:base="http://0.0.0.0:4000/c++/tag-dispatching-passkey/"><![CDATA[<h2 id="tag-dispatching">Tag Dispatching</h2>
+
+<h3 id="정의">정의</h3>
+
+<ul>
+  <li>C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴</li>
+  <li>함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함</li>
+</ul>
+
+<h3 id="예시">예시</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;list&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;iterator&gt;</span><span class="cp">
+</span>
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">FuncImpl</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">random_access_iterator_tag</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"O(1) Access</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+	<span class="n">it</span> <span class="o">+=</span> <span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="n">FuncImpl</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">bidirectional_iterator_tag</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"O(N) Access</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="o">++</span><span class="n">it</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="n">Func</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">FuncImpl</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="k">typename</span> <span class="n">std</span><span class="o">::</span><span class="n">iterator_traits</span><span class="o">&lt;</span><span class="n">Iter</span><span class="o">&gt;::</span><span class="n">iterator_category</span> <span class="p">{});</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span> <span class="p">};</span>
+	<span class="k">auto</span> <span class="n">vIt</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+
+	<span class="n">Func</span><span class="p">(</span><span class="n">vIt</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"value: "</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">vIt</span> <span class="o">&lt;&lt;</span> <span class="sc">'\n'</span><span class="p">;</span>
+
+	<span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">l</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span> <span class="p">};</span>
+	<span class="k">auto</span> <span class="n">lIt</span> <span class="o">=</span> <span class="n">l</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+
+	<span class="n">Func</span><span class="p">(</span><span class="n">lIt</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+	<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"value: "</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">lIt</span> <span class="o">&lt;&lt;</span> <span class="sc">'\n'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">FuncImpl</code>에서 <code class="language-plaintext highlighter-rouge">std::random_access_iterator_tag</code>나 <code class="language-plaintext highlighter-rouge">std::bidirectional_iterator_tag</code>와 같은 빈 구조체를 매개변수로 받음</li>
+  <li>컴파일 시점에 <code class="language-plaintext highlighter-rouge">iterator_traits&lt;Iter&gt;::iterator_category{}</code>를 통해 타입에 대한 함수가 연결됨</li>
+  <li>결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨</li>
+</ul>
+
+<h3 id="c-17">C++ 17</h3>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">Iter</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Func</span><span class="p">(</span><span class="n">Iter</span><span class="o">&amp;</span> <span class="n">it</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="k">constexpr</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">std</span><span class="o">::</span><span class="n">iterator_traits</span><span class="o">&lt;</span><span class="n">Iter</span><span class="o">&gt;::</span><span class="n">iterator_category</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">random_access_iterator_tag</span><span class="o">&gt;</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">it</span> <span class="o">+=</span> <span class="n">n</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">else</span>
+	<span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+			<span class="o">++</span><span class="n">it</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 <code class="language-plaintext highlighter-rouge">if constexpr</code>을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음</li>
+  <li>태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다</li>
+</ul>
+
+<h2 id="passkey-idiom-private-tag">Passkey Idiom (private tag)</h2>
+
+<h3 id="사용방법">사용방법</h3>
+
+<ul>
+  <li>스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="nl">private:</span>
+	<span class="k">struct</span> <span class="nc">SecretKey</span> <span class="p">{};</span>
+<span class="nl">public:</span>
+	<span class="k">explicit</span> <span class="n">A</span><span class="p">(</span><span class="n">SecretKey</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Make A by Secret Key</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">static</span> <span class="k">auto</span> <span class="n">Create</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="k">auto</span> <span class="n">newA</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span><span class="p">(</span><span class="n">SecretKey</span><span class="p">{});</span>
+		<span class="k">return</span> <span class="n">newA</span><span class="p">;</span>
+	<span class="p">}</span>
+
+<span class="nl">private:</span>
+
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="k">auto</span> <span class="n">validA</span> <span class="o">=</span> <span class="n">A</span><span class="o">::</span><span class="n">Create</span><span class="p">();</span> <span class="c1">// 정상 작동</span>
+	<span class="k">auto</span> <span class="n">invalidA</span> <span class="o">=</span> <span class="k">new</span> <span class="n">A</span><span class="p">();</span> <span class="c1">// 컴파일 에러</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>생성자는 Tag용 빈 구조체 <code class="language-plaintext highlighter-rouge">SecretKey</code>을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함</li>
+  <li>사용자는 <code class="language-plaintext highlighter-rouge">A</code>클래스의 <code class="language-plaintext highlighter-rouge">Create</code>함수만을 통해 <code class="language-plaintext highlighter-rouge">A</code>객체를 생성할 수 있음</li>
+</ul>
+
+<h3 id="주의점">주의점</h3>
+
+<ul>
+  <li>스마트 포인터의 <code class="language-plaintext highlighter-rouge">make_shared</code>, <code class="language-plaintext highlighter-rouge">make_unique</code>는 <code class="language-plaintext highlighter-rouge">A</code> 클래스에 대해 외부 함수이므로 <code class="language-plaintext highlighter-rouge">new</code> 호출을 통해 포인터를 생성하도록 설계되어 있음</li>
+  <li>이때, <code class="language-plaintext highlighter-rouge">A</code>클래스의 생성자를 <code class="language-plaintext highlighter-rouge">private</code>영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함</li>
+</ul>
+
+<h3 id="결론">결론</h3>
+
+<ul>
+  <li>따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함</li>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="tag dispatching" /><category term="passkey idiom" /><category term="c++" /><category term="cpp" /><category term="private tag" /><summary type="html"><![CDATA[Tag Dispatching 정의 C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴 함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함 예시 #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt; template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { std::cout &lt;&lt; "O(1) Access\n"; it += n; } template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { std::cout &lt;&lt; "O(N) Access\n"; for (int i = 0; i &lt; n; ++i) ++it; } template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); } int main() { std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; auto vIt = v.begin(); Func(vIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *vIt &lt;&lt; '\n'; std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; auto lIt = l.begin(); Func(lIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *lIt &lt;&lt; '\n'; } FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음 컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨 결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨 C++ 17 template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) { it += n; } else { for(int i = 0; i &lt; n; ++i) ++it; } } C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음 태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다 Passkey Idiom (private tag) 사용방법 스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나 class A { private: struct SecretKey {}; public: explicit A(SecretKey) { std::cout &lt;&lt; "Make A by Secret Key\n"; } static auto Create() { auto newA = std::make_shared&lt;A&gt;(SecretKey{}); return newA; } private: }; int main() { auto validA = A::Create(); // 정상 작동 auto invalidA = new A(); // 컴파일 에러 } 생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함 사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음 주의점 스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음 이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함 결론 따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함]]></summary></entry><entry><title type="html">Sample</title><link href="http://0.0.0.0:4000/test/sample/" rel="alternate" type="text/html" title="Sample" /><published>2026-01-01T00:00:00+00:00</published><updated>2026-01-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/test/sample</id><content type="html" xml:base="http://0.0.0.0:4000/test/sample/"><![CDATA[<ul>
   <li>Sample Post</li>
 </ul>
 
@@ -215,7 +425,89 @@
 
 <ul>
   <li>위와 같은 방식으로 shared_ptr로 초기화 된 a 객체에 대해서 약한 참조를 할 때 <code class="language-plaintext highlighter-rouge">lock()</code>을 통해 객체가 유효한지 확인 할 수 있으며 <code class="language-plaintext highlighter-rouge">lock()</code>은 shared_ptr을 반환함</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="C++" /><category term="스마트포인터" /><category term="memory" /><category term="순환참조" /><summary type="html"><![CDATA[개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다 메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다 문제점 shared_ptr은 하나의 메모리를 여러 객체가 공유하고자 할 때 사용할 수 있음 당연하게도 A라는 클래스에 대한 shared_ptr을 B라는 클래스의 객체가 소유할 수 있음 Class A { public: A() {} std::shared_ptr&lt;B&gt; b; }; Class B { public: B() {} std::shared_ptr&lt;A&gt; a; } int main() { auto a = std::make_shared&lt;A&gt;(); auto b = std::make_shared&lt;B&gt;(); // 서로 참조 횟수 증가 a-&gt;b = b; b-&gt;a = a; } 위와 같은 코드는 shared_ptr의 잘못된 사용의 예시임 A 가 B 에 대한 shared_ptr을 소유하고 B 가 A 에 대한 shared_ptr을 소유하는 순환 참조 문제가 일어남 shared_ptr은 참조 카운트를 내부적으로 가지고 있으며 참조 카운트가 0이 될 경우 소멸하는 로직을 가지고있음 결론적으로 객체가 소멸되어야 할 타이밍에 소멸되지 못하고 메모리 누수가 발생함 해결 방법 순환 참조가 일어날 가능성이 있는 구조에서는 weak_ptr을 사용하여 소유권을 가지지 않도록 해야함 class A { public: A() { std::cout &lt;&lt; "Created A\n"; } ~A() { std::cout &lt;&lt; "Destroyed A\n"; } std::weak_ptr&lt;B&gt; b; }; class B { public: B() { std::cout &lt;&lt; "Created B\n"; } ~B() { std::cout &lt;&lt; "Destoryed B\n"; } std::weak_ptr&lt;A&gt; a; }; int main() { auto a = std::make_shared&lt;A&gt;(); auto b = std::make_shared&lt;B&gt;(); a-&gt;b = b; b-&gt;a = a; } weak_ptr로 공유를 받게 될 경우 참조 카운트를 증가시키지 않고 shared_ptr의 weak 카운트를 증가시키며 이는 객체의 소멸 조건에 영향을 주지 않음 결론적으로 참조 카운트는 0이 되며 안전하게 소멸자를 호출함 shared_ptr의 구조 shared_ptr은 메모리 블록에 실제 데이터 메모리 영역과 이를 관리하는 컨트롤 블록(Control Block)영역으로 나뉨 이때 컨트롤 블록은 참조 카운트, weak 카운트 (약한 참조), 객체 소멸자 포인터 등 해당 메모리를 관리하기 위한 정보들로 이루어져있음 참조 카운트가 0이 되면 객체는 소멸함, 그러나 weak 카운트가 0이 아니라면 컨트롤 블록은 소멸하지 않음 소멸 체크를 위한 로직 auto a = std::make_shared&lt;A&gt;(); // 여기서 자동으로 약한 참조 std::weak_ptr&lt;A&gt; weakA = a; if(auto sharedA = weakA.lock()) { sharedA-&gt;DoSomething(); } 위와 같은 방식으로 shared_ptr로 초기화 된 a 객체에 대해서 약한 참조를 할 때 lock()을 통해 객체가 유효한지 확인 할 수 있으며 lock()은 shared_ptr을 반환함]]></summary></entry><entry><title type="html">Boost.asio async 사용 및 주의점</title><link href="http://0.0.0.0:4000/c++/asio-warning/" rel="alternate" type="text/html" title="Boost.asio async 사용 및 주의점" /><published>2024-12-06T00:00:00+00:00</published><updated>2024-12-06T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/asio-warning</id><content type="html" xml:base="http://0.0.0.0:4000/c++/asio-warning/"><![CDATA[<h2 id="boostasio-async_write">Boost.Asio async_write</h2>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="C++" /><category term="스마트포인터" /><category term="memory" /><category term="순환참조" /><summary type="html"><![CDATA[개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다 메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다 문제점 shared_ptr은 하나의 메모리를 여러 객체가 공유하고자 할 때 사용할 수 있음 당연하게도 A라는 클래스에 대한 shared_ptr을 B라는 클래스의 객체가 소유할 수 있음 Class A { public: A() {} std::shared_ptr&lt;B&gt; b; }; Class B { public: B() {} std::shared_ptr&lt;A&gt; a; } int main() { auto a = std::make_shared&lt;A&gt;(); auto b = std::make_shared&lt;B&gt;(); // 서로 참조 횟수 증가 a-&gt;b = b; b-&gt;a = a; } 위와 같은 코드는 shared_ptr의 잘못된 사용의 예시임 A 가 B 에 대한 shared_ptr을 소유하고 B 가 A 에 대한 shared_ptr을 소유하는 순환 참조 문제가 일어남 shared_ptr은 참조 카운트를 내부적으로 가지고 있으며 참조 카운트가 0이 될 경우 소멸하는 로직을 가지고있음 결론적으로 객체가 소멸되어야 할 타이밍에 소멸되지 못하고 메모리 누수가 발생함 해결 방법 순환 참조가 일어날 가능성이 있는 구조에서는 weak_ptr을 사용하여 소유권을 가지지 않도록 해야함 class A { public: A() { std::cout &lt;&lt; "Created A\n"; } ~A() { std::cout &lt;&lt; "Destroyed A\n"; } std::weak_ptr&lt;B&gt; b; }; class B { public: B() { std::cout &lt;&lt; "Created B\n"; } ~B() { std::cout &lt;&lt; "Destoryed B\n"; } std::weak_ptr&lt;A&gt; a; }; int main() { auto a = std::make_shared&lt;A&gt;(); auto b = std::make_shared&lt;B&gt;(); a-&gt;b = b; b-&gt;a = a; } weak_ptr로 공유를 받게 될 경우 참조 카운트를 증가시키지 않고 shared_ptr의 weak 카운트를 증가시키며 이는 객체의 소멸 조건에 영향을 주지 않음 결론적으로 참조 카운트는 0이 되며 안전하게 소멸자를 호출함 shared_ptr의 구조 shared_ptr은 메모리 블록에 실제 데이터 메모리 영역과 이를 관리하는 컨트롤 블록(Control Block)영역으로 나뉨 이때 컨트롤 블록은 참조 카운트, weak 카운트 (약한 참조), 객체 소멸자 포인터 등 해당 메모리를 관리하기 위한 정보들로 이루어져있음 참조 카운트가 0이 되면 객체는 소멸함, 그러나 weak 카운트가 0이 아니라면 컨트롤 블록은 소멸하지 않음 소멸 체크를 위한 로직 auto a = std::make_shared&lt;A&gt;(); // 여기서 자동으로 약한 참조 std::weak_ptr&lt;A&gt; weakA = a; if(auto sharedA = weakA.lock()) { sharedA-&gt;DoSomething(); } 위와 같은 방식으로 shared_ptr로 초기화 된 a 객체에 대해서 약한 참조를 할 때 lock()을 통해 객체가 유효한지 확인 할 수 있으며 lock()은 shared_ptr을 반환함]]></summary></entry><entry><title type="html">lvalue와 rvalue</title><link href="http://0.0.0.0:4000/c++/lvalue-rvalue/" rel="alternate" type="text/html" title="lvalue와 rvalue" /><published>2025-12-15T00:00:00+00:00</published><updated>2025-12-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/lvalue-rvalue</id><content type="html" xml:base="http://0.0.0.0:4000/c++/lvalue-rvalue/"><![CDATA[<h2 id="lvalue">lvalue</h2>
+
+<ul>
+  <li>메모리 주소가 존재하며 식별자가 있는 표현식</li>
+  <li>참조나 대입이 가능, <code class="language-plaintext highlighter-rouge">&amp;</code>연산자로 주소를 가져올 수 있음</li>
+  <li>변수 이름, 배열요소, 반환값이 참조형인 함수 등은 <code class="language-plaintext highlighter-rouge">lvalue</code>의 대표적인 예시임</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> <span class="c1">// x -&gt; lvalue</span>
+<span class="kt">int</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span> <span class="c1">// x의 주소를 받아 올 수 있음</span>
+</code></pre></div></div>
+
+<h2 id="rvalue">rvalue</h2>
+
+<ul>
+  <li>메모리 주소가 없거나 사용자가 접근할 수 없는 임시 값</li>
+  <li>대부분의 리터럴, 임시 계산 결과, 덧셈 등의 연산 결과에서 생성된 값</li>
+  <li>참조할 수 없으며 대입의 오른쪽에만 올 수 있음</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">+</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// 5와 x+5는 rvalue</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">lvalue</code>는 <code class="language-plaintext highlighter-rouge">rvalue</code>로 <strong>변환</strong>될 수 있음
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">x + y</code>에서 x, y는 <code class="language-plaintext highlighter-rouge">lvalue</code>지만 덧셈의 결과는 <code class="language-plaintext highlighter-rouge">rvalue</code></li>
+    </ul>
+
+    <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// x -&gt; lvalue</span>
+<span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// x + 2 연산 시 x는 rvalue로 변환 됨</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>모든 <code class="language-plaintext highlighter-rouge">lvalue</code>가 항상 변환되는 것이 아닌 변환이 필요한 시점에만 변환이 일어남</li>
+    </ul>
+  </li>
+  <li>반대로 <code class="language-plaintext highlighter-rouge">rvalue</code>를 <code class="language-plaintext highlighter-rouge">lvalue</code>로 변환하는 것은 불가능, 변환 시 임시 객체가 생성 됨</li>
+  <li><code class="language-plaintext highlighter-rouge">rvalue</code> 참조(<code class="language-plaintext highlighter-rouge">T&amp;&amp;</code>)는 <code class="language-plaintext highlighter-rouge">rvalue</code>에 대해서 참조할 수 있게 하며 이동 의미론 등 자원 관리에 쓰임</li>
+</ul>
+
+<h2 id="rvalue-참조">rvalue 참조</h2>
+
+<ul>
+  <li>임시 값(<code class="language-plaintext highlighter-rouge">rvalue</code>)만을 참조할 수 있는 참조 타입으로 문법은 <code class="language-plaintext highlighter-rouge">T&amp;&amp;</code>로 표기함</li>
+  <li><code class="language-plaintext highlighter-rouge">rvalue</code>는 보통 표현식에서 생성된 값, 리터럴 등 일회성 값을 의미하며 등호(<code class="language-plaintext highlighter-rouge">=</code>)의 우측에만 올 수 있어 수정이 불가능함</li>
+  <li><code class="language-plaintext highlighter-rouge">rvalue</code> 참조 타입으로 선언하면 기존에는 접근 할 수 없었던 임시 객체를 참조할 수 있음
+    <ul>
+      <li>이동 생성자와 이동 연산자 등에 활용</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// a + 1의 결과 rvalue를 c가 참조</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">rvalue</code> 참조는 이동 의미론과 함께 사용되어 <code class="language-plaintext highlighter-rouge">std::move</code>를 통해 자원을 효율적으로 이전하는 것에 활용됨</li>
+</ul>
+
+<h3 id="특징과-역할">특징과 역할</h3>
+
+<ul>
+  <li>이름이 없는 임시 객체와 리터럴 등의 <code class="language-plaintext highlighter-rouge">rvalue</code>만을 참조할 수 있음
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">int&amp;&amp; a = 3;</code> 처럼 <code class="language-plaintext highlighter-rouge">rvalue</code> 만 할당 가능</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">lvalue</code> 에는 <code class="language-plaintext highlighter-rouge">rvalue</code> 참조를 할당할 수 없음
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">int&amp;&amp; c = a;</code> 와같은 문법은 오류임</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">rvalue</code> 참조의 주된 목적은 임시 객체에 대한 자원 <strong>이동</strong>을 가능하게 하여 불필요한 복사 비용을 줄이고 성능을 개선하는 데 있음</li>
+</ul>
+
+<h3 id="장점">장점</h3>
+
+<ul>
+  <li><strong>복사 대신 이동</strong>이 가능해져 컨테이너, 함수 반환값 등에서 불필요한 복사 오버헤드를 줄임</li>
+  <li>함수 오버로딩 시 <code class="language-plaintext highlighter-rouge">lvalue</code>참조(<code class="language-plaintext highlighter-rouge">T&amp;</code>)와 <code class="language-plaintext highlighter-rouge">rvalue</code>참조(<code class="language-plaintext highlighter-rouge">T&amp;&amp;</code>)의 <strong>구분이 가능</strong>해져 상황에 맞는 최적화 함수 제공 가능</li>
+  <li>임시 객체를 수정하거나 자원을 옮기는 <strong>이동 생성자</strong> / <strong>이동 대입 연산자</strong>의 구현에 필수적</li>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="lvalue" /><category term="rvalue" /><category term="c++" /><category term="cpp" /><summary type="html"><![CDATA[lvalue 메모리 주소가 존재하며 식별자가 있는 표현식 참조나 대입이 가능, &amp;연산자로 주소를 가져올 수 있음 변수 이름, 배열요소, 반환값이 참조형인 함수 등은 lvalue의 대표적인 예시임 int x = 10; // x -&gt; lvalue int* p = &amp;x; // x의 주소를 받아 올 수 있음 rvalue 메모리 주소가 없거나 사용자가 접근할 수 없는 임시 값 대부분의 리터럴, 임시 계산 결과, 덧셈 등의 연산 결과에서 생성된 값 참조할 수 없으며 대입의 오른쪽에만 올 수 있음 int y = 5 + x; // 5와 x+5는 rvalue lvalue는 rvalue로 변환될 수 있음 x + y에서 x, y는 lvalue지만 덧셈의 결과는 rvalue int x = 5; // x -&gt; lvalue int y = x + 2; // x + 2 연산 시 x는 rvalue로 변환 됨 모든 lvalue가 항상 변환되는 것이 아닌 변환이 필요한 시점에만 변환이 일어남 반대로 rvalue를 lvalue로 변환하는 것은 불가능, 변환 시 임시 객체가 생성 됨 rvalue 참조(T&amp;&amp;)는 rvalue에 대해서 참조할 수 있게 하며 이동 의미론 등 자원 관리에 쓰임 rvalue 참조 임시 값(rvalue)만을 참조할 수 있는 참조 타입으로 문법은 T&amp;&amp;로 표기함 rvalue는 보통 표현식에서 생성된 값, 리터럴 등 일회성 값을 의미하며 등호(=)의 우측에만 올 수 있어 수정이 불가능함 rvalue 참조 타입으로 선언하면 기존에는 접근 할 수 없었던 임시 객체를 참조할 수 있음 이동 생성자와 이동 연산자 등에 활용 int&amp;&amp; c = a + 1; // a + 1의 결과 rvalue를 c가 참조 rvalue 참조는 이동 의미론과 함께 사용되어 std::move를 통해 자원을 효율적으로 이전하는 것에 활용됨 특징과 역할 이름이 없는 임시 객체와 리터럴 등의 rvalue만을 참조할 수 있음 int&amp;&amp; a = 3; 처럼 rvalue 만 할당 가능 lvalue 에는 rvalue 참조를 할당할 수 없음 int&amp;&amp; c = a; 와같은 문법은 오류임 rvalue 참조의 주된 목적은 임시 객체에 대한 자원 이동을 가능하게 하여 불필요한 복사 비용을 줄이고 성능을 개선하는 데 있음 장점 복사 대신 이동이 가능해져 컨테이너, 함수 반환값 등에서 불필요한 복사 오버헤드를 줄임 함수 오버로딩 시 lvalue참조(T&amp;)와 rvalue참조(T&amp;&amp;)의 구분이 가능해져 상황에 맞는 최적화 함수 제공 가능 임시 객체를 수정하거나 자원을 옮기는 이동 생성자 / 이동 대입 연산자의 구현에 필수적]]></summary></entry><entry><title type="html">Boost.asio async 사용 및 주의점</title><link href="http://0.0.0.0:4000/c++/asio-warning/" rel="alternate" type="text/html" title="Boost.asio async 사용 및 주의점" /><published>2024-12-06T00:00:00+00:00</published><updated>2024-12-06T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/asio-warning</id><content type="html" xml:base="http://0.0.0.0:4000/c++/asio-warning/"><![CDATA[<h2 id="boostasio-async_write">Boost.Asio async_write</h2>
 
 <ul>
   <li>
