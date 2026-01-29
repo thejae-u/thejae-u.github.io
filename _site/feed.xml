@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-01-27T15:40:59+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">핸들러의 완벽한 전달 std::forward</title><link href="http://0.0.0.0:4000/c++/std-forward/" rel="alternate" type="text/html" title="핸들러의 완벽한 전달 std::forward" /><published>2026-01-15T00:00:00+00:00</published><updated>2026-01-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/std-forward</id><content type="html" xml:base="http://0.0.0.0:4000/c++/std-forward/"><![CDATA[<h2 id="stdforward">std::forward</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-01-29T17:48:14+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">핸들러의 완벽한 전달 std::forward</title><link href="http://0.0.0.0:4000/c++/std-forward/" rel="alternate" type="text/html" title="핸들러의 완벽한 전달 std::forward" /><published>2026-01-15T00:00:00+00:00</published><updated>2026-01-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/std-forward</id><content type="html" xml:base="http://0.0.0.0:4000/c++/std-forward/"><![CDATA[<h2 id="stdforward">std::forward</h2>
 
 <ul>
   <li><code class="language-plaintext highlighter-rouge">std::move</code>는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수</li>
@@ -208,7 +208,73 @@
 
 <ul>
   <li>따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="tag dispatching" /><category term="passkey idiom" /><category term="c++" /><category term="cpp" /><category term="private tag" /><summary type="html"><![CDATA[Tag Dispatching 정의 C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴 함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함 예시 #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt; template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { std::cout &lt;&lt; "O(1) Access\n"; it += n; } template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { std::cout &lt;&lt; "O(N) Access\n"; for (int i = 0; i &lt; n; ++i) ++it; } template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); } int main() { std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; auto vIt = v.begin(); Func(vIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *vIt &lt;&lt; '\n'; std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; auto lIt = l.begin(); Func(lIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *lIt &lt;&lt; '\n'; } FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음 컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨 결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨 C++ 17 template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) { it += n; } else { for(int i = 0; i &lt; n; ++i) ++it; } } C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음 태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다 Passkey Idiom (private tag) 사용방법 스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나 class A { private: struct SecretKey {}; public: explicit A(SecretKey) { std::cout &lt;&lt; "Make A by Secret Key\n"; } static auto Create() { auto newA = std::make_shared&lt;A&gt;(SecretKey{}); return newA; } private: }; int main() { auto validA = A::Create(); // 정상 작동 auto invalidA = new A(); // 컴파일 에러 } 생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함 사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음 주의점 스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음 이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함 결론 따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함]]></summary></entry><entry><title type="html">Sample</title><link href="http://0.0.0.0:4000/test/sample/" rel="alternate" type="text/html" title="Sample" /><published>2026-01-01T00:00:00+00:00</published><updated>2026-01-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/test/sample</id><content type="html" xml:base="http://0.0.0.0:4000/test/sample/"><![CDATA[<ul>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="tag dispatching" /><category term="passkey idiom" /><category term="c++" /><category term="cpp" /><category term="private tag" /><summary type="html"><![CDATA[Tag Dispatching 정의 C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴 함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함 예시 #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt; template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { std::cout &lt;&lt; "O(1) Access\n"; it += n; } template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { std::cout &lt;&lt; "O(N) Access\n"; for (int i = 0; i &lt; n; ++i) ++it; } template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); } int main() { std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; auto vIt = v.begin(); Func(vIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *vIt &lt;&lt; '\n'; std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; auto lIt = l.begin(); Func(lIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *lIt &lt;&lt; '\n'; } FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음 컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨 결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨 C++ 17 template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) { it += n; } else { for(int i = 0; i &lt; n; ++i) ++it; } } C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음 태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다 Passkey Idiom (private tag) 사용방법 스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나 class A { private: struct SecretKey {}; public: explicit A(SecretKey) { std::cout &lt;&lt; "Make A by Secret Key\n"; } static auto Create() { auto newA = std::make_shared&lt;A&gt;(SecretKey{}); return newA; } private: }; int main() { auto validA = A::Create(); // 정상 작동 auto invalidA = new A(); // 컴파일 에러 } 생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함 사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음 주의점 스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음 이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함 결론 따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함]]></summary></entry><entry><title type="html">보편참조</title><link href="http://0.0.0.0:4000/c++/universal-reference/" rel="alternate" type="text/html" title="보편참조" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/universal-reference</id><content type="html" xml:base="http://0.0.0.0:4000/c++/universal-reference/"><![CDATA[<ul>
+  <li>상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 <code class="language-plaintext highlighter-rouge">T&amp;&amp;</code> 형태의 참조</li>
+  <li>무조건 rvalue 참조인 일반적인 <code class="language-plaintext highlighter-rouge">T&amp;&amp;</code> 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념</li>
+  <li>조건을 만족하는 <code class="language-plaintext highlighter-rouge">T&amp;&amp;</code>에 대해 인자에 따라 다음과 같이 동작함
+    <ul>
+      <li>lvalue 전달 시 : <code class="language-plaintext highlighter-rouge">T</code>가 <code class="language-plaintext highlighter-rouge">U&amp;</code>로 추론되고, 매개변수 타입은 <code class="language-plaintext highlighter-rouge">U&amp; &amp;&amp;</code> -&gt; 참조 축약으로 <code class="language-plaintext highlighter-rouge">U&amp;</code> (lvalue 참조)</li>
+      <li>rvalue 전달 시 : <code class="language-plaintext highlighter-rouge">T</code>가 <code class="language-plaintext highlighter-rouge">U</code>로 추론되고, 매개변수 타입은 <code class="language-plaintext highlighter-rouge">U&amp;&amp;</code> (rvalue 참조)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="대표적인-패턴">대표적인 패턴</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Func</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;&amp;</span> <span class="n">val</span><span class="p">);</span> <span class="c1">// val은 보편참조 가능</span>
+</code></pre></div></div>
+
+<ul>
+  <li>함수 템플릿 매개변수</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span><span class="o">&amp;&amp;</span> <span class="n">val</span> <span class="o">=</span> <span class="n">expr</span><span class="p">;</span> <span class="c1">// var는 보편참조</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">auto&amp;&amp;</code> 변수</li>
+</ul>
+
+<h2 id="보편-참조가-아닌-경우">보편 참조가 아닌 경우</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">T&amp;&amp;</code> 가 모두 보편 참조인 것은 아님</li>
+  <li>다음의 경우는 모두 보편참조가 아님</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">Func</span><span class="p">(</span><span class="n">Widget</span><span class="o">&amp;&amp;</span> <span class="n">val</span><span class="p">);</span> <span class="c1">// 템플릿이 아님 -&gt; rvalue 참조</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Func</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;&amp;</span> <span class="n">val</span><span class="p">);</span> <span class="c1">// T는 추론됨 그러나 val 타입 형태가 T&amp;&amp;가 아님 -&gt; rvalue 참조</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="kt">void</span> <span class="nf">Func</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;&amp;</span> <span class="n">val</span><span class="p">);</span> <span class="c1">// const T&amp;&amp; -&gt; rvalue 참조</span>
+</code></pre></div></div>
+
+<h2 id="예제-코드">예제 코드</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;type_traits&gt;</span><span class="cp">
+</span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span> <span class="kt">void</span> <span class="nf">Func</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;&amp;</span> <span class="n">val</span><span class="p">)</span> <span class="c1">// Universal reference</span>
+<span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_rvalue_reference</span><span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"value is r value</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+	<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_lvalue_reference</span><span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">&gt;::</span><span class="n">value</span><span class="p">)</span>
+		<span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"value is l value</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">Func</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="n">x</span><span class="o">=</span><span class="mi">10</span><span class="p">;</span>
+	<span class="n">Func</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>출력 결과
+value is r value
+value is l value
+</code></pre></div></div>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="references" /><category term="universal references" /><category term="보편참조" /><summary type="html"><![CDATA[상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조 무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념 조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함 lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조) rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조) 대표적인 패턴 template &lt;typename T&gt; void Func(T&amp;&amp; val); // val은 보편참조 가능 함수 템플릿 매개변수 auto&amp;&amp; val = expr; // var는 보편참조 auto&amp;&amp; 변수 보편 참조가 아닌 경우 T&amp;&amp; 가 모두 보편 참조인 것은 아님 다음의 경우는 모두 보편참조가 아님 void Func(Widget&amp;&amp; val); // 템플릿이 아님 -&gt; rvalue 참조 template &lt;typename T&gt; void Func(std::vector&lt;T&gt;&amp;&amp; val); // T는 추론됨 그러나 val 타입 형태가 T&amp;&amp;가 아님 -&gt; rvalue 참조 template &lt;typename T&gt; void Func(const T&amp;&amp; val); // const T&amp;&amp; -&gt; rvalue 참조 예제 코드 #include &lt;iostream&gt; #include &lt;type_traits&gt; template &lt;typename T&gt; void Func(T&amp;&amp; val) // Universal reference { if(std::is_rvalue_reference&lt;decltype(val)&gt;::value) std::cout &lt;&lt; "value is r value\n"; else if(std::is_lvalue_reference&lt;decltype(val)&gt;::value) std::cout &lt;&lt; "value is l value\n"; } int main() { Func(3); int x=10; Func(x); } 출력 결과 value is r value value is l value]]></summary></entry><entry><title type="html">Sample</title><link href="http://0.0.0.0:4000/test/sample/" rel="alternate" type="text/html" title="Sample" /><published>2026-01-01T00:00:00+00:00</published><updated>2026-01-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/test/sample</id><content type="html" xml:base="http://0.0.0.0:4000/test/sample/"><![CDATA[<ul>
   <li>Sample Post</li>
 </ul>
 

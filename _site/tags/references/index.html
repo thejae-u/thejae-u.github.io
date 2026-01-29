@@ -10,7 +10,7 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>mt19937 - Thejaeu Dev-log</title>
+<!-- begin _includes/seo.html --><title>references - Thejaeu Dev-log</title>
 <meta name="description" content="Game Server Programmer">
 
 
@@ -21,8 +21,8 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="kr_ko">
 <meta property="og:site_name" content="Thejaeu Dev-log">
-<meta property="og:title" content="mt19937">
-<meta property="og:url" content="http://0.0.0.0:4000/tags/mt19937/">
+<meta property="og:title" content="references">
+<meta property="og:url" content="http://0.0.0.0:4000/tags/references/">
 
 
   <meta property="og:description" content="Game Server Programmer">
@@ -38,7 +38,7 @@
 
 
 
-<link rel="canonical" href="http://0.0.0.0:4000/tags/mt19937/">
+<link rel="canonical" href="http://0.0.0.0:4000/tags/references/">
 
 
 
@@ -148,7 +148,7 @@
 
   <div class="archive">
     
-      <h1 id="page-title" class="page__title">mt19937</h1>
+      <h1 id="page-title" class="page__title">references</h1>
     
     
       
@@ -160,7 +160,7 @@
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
-        <a href="/c++/random-device/" rel="permalink">C++ random_device
+        <a href="/c++/universal-reference/" rel="permalink">보편참조
 </a>
       
     </h2>
@@ -172,7 +172,7 @@
       <span class="page__meta-date">
         <i class="far fa-calendar-alt" aria-hidden="true"></i>
         
-        <time datetime="2025-12-28T00:00:00+00:00">2025-12-28</time>
+        <time datetime="2026-01-11T00:00:00+00:00">2026-01-11</time>
       </span>
     
 
@@ -185,29 +185,17 @@
       <span class="page__meta-readtime">
         <i class="far fa-clock" aria-hidden="true"></i>
         
-          1 minute read
+          less than 1 minute read
         
       </span>
     
   </p>
 
 
-    <p class="archive__item-excerpt" itemprop="description">기본 사용
-
-#include &lt;random&gt;
-
-// ...
-
-std::random_device seed;
-std::mt19937 generator(seed());
-
-auto rNumber = generator();
-
-// ...
-
-
-
-  &lt;random&gt; 헤더를...</p>
+    <p class="archive__item-excerpt" itemprop="description">
+  상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조
+  무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념
+  조건을 만족하는 T&amp;&amp;에 대...</p>
   </article>
 </div>
 

@@ -17,6 +17,19 @@
     </url>
     
     <url>
+        <loc>http://0.0.0.0:4000/c++/universal-reference/</loc>
+        
+        <lastmod>2026-01-11T00:00:00+00:00</lastmod>
+        
+        
+        <changefreq>weekly</changefreq>
+        
+        
+        <priority>0.5</priority>
+        
+    </url>
+    
+    <url>
         <loc>http://0.0.0.0:4000/c++/tag-dispatching-passkey/</loc>
         
         <lastmod>2026-01-11T00:00:00+00:00</lastmod>

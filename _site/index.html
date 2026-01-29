@@ -85,6 +85,7 @@
     <!-- start custom head snippets -->
 
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
 
@@ -353,6 +354,53 @@
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
+        <a href="/c++/universal-reference/" rel="permalink">보편참조
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-11T00:00:00+00:00">2026-01-11</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          less than 1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조
+  무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념
+  조건을 만족하는 T&amp;&amp;에 대...</p>
+  </article>
+</div>
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
         <a href="/c++/tag-dispatching-passkey/" rel="permalink">Tag Dispatching과 Passkey Idiom
 </a>
       
@@ -511,58 +559,6 @@ auto rNumber = generator();
 
 
   &lt;random&gt; 헤더를...</p>
-  </article>
-</div>
-
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/smart-pointer/" rel="permalink">스마트 포인터 순환 참조 문제
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2025-12-27T00:00:00+00:00">2025-12-27</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">
-  개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다
-  메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다
-
-
-문제점
-
-
-  shared_ptr...</p>
   </article>
 </div>
 

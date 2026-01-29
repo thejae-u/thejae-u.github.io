@@ -41,6 +41,12 @@ var store = [{
         "url": "/c++/tag-dispatching-passkey/",
         "teaser": null
       },{
+        "title": "보편참조",
+        "excerpt":"상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조 무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념 조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함 lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로...","categories": ["C++"],
+        "tags": ["c++","cpp","references","universal references","보편참조"],
+        "url": "/c++/universal-reference/",
+        "teaser": null
+      },{
         "title": "핸들러의 완벽한 전달 std::forward",
         "excerpt":"std::forward std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수 std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-value, r-value)를 보존하여 다시 넘겨주는 함수 L-Value로 들어왔으면 L-Value로, R-Value로 들어왔으면 R-Value로 캐스팅 됨 기본 형태 template &lt;typename T, typename... Args&gt; void wrapper(T&amp;&amp; t, Args&amp;&amp;... args) {...","categories": ["C++"],
         "tags": ["forward","handler","c++","cpp","move"],
