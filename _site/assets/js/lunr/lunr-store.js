@@ -11,6 +11,12 @@ var store = [{
         "url": "/c++/asio-warning/",
         "teaser": null
       },{
+        "title": "이동의미론과 std::move",
+        "excerpt":"이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임 복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함 이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가...","categories": ["C++"],
+        "tags": ["c++","cpp","std::move","move","이동의미론"],
+        "url": "/c++/move/",
+        "teaser": null
+      },{
         "title": "lvalue와 rvalue",
         "excerpt":"lvalue 메모리 주소가 존재하며 식별자가 있는 표현식 참조나 대입이 가능, &amp;연산자로 주소를 가져올 수 있음 변수 이름, 배열요소, 반환값이 참조형인 함수 등은 lvalue의 대표적인 예시임 int x = 10; // x -&gt; lvalue int* p = &amp;x; // x의 주소를 받아 올 수 있음 rvalue 메모리 주소가 없거나 사용자가 접근할...","categories": ["C++"],
         "tags": ["lvalue","rvalue","c++","cpp"],

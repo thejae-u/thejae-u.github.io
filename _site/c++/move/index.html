@@ -1,0 +1,796 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.27.3 by Michael Rose
+  Copyright 2013-2025 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="kr-ko" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>이동의미론과 std::move - Thejaeu Dev-log</title>
+<meta name="description" content="이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임   복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함   이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨   이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음   이동 생성자 예시  class MyClass { public: 	MyClass(MyClass&amp;&amp; other) noexcept; // 이동 생성자 	MyClass&amp; operator=(MyClass&amp;&amp; other) noexcept; // 이동 대입 연산자 };      rvalue 를 매개변수로 받아 소유권을 이전시킴   std::move     &lt;utility&gt; 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함   객체를 rvalue로 캐스팅하여 lvalue라 하더라도 강제로 이동할 수 있도록 함            실제 이동은 move 생성자/연산자가 실행될 때 일어남           표준 컨테이너 std::vector, std::string, std::unique_ptr 등은 이동 의미론을 완벽하게 지원함   #include &lt;utility&gt; ... std::vector&lt;int&gt; vec(1000000, 1); std::vector&lt;int&gt; newVec;  newVec = vec; // copy semantics newVec = std::move(vec); // move semantics      std::move 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함   복사할 수 없는 객체에 대해서 이동을 적용할 수 있음   주의     이동생성자나 이동 대입 연산자의 정의가 없을 경우 std::move는 이동이 아닌 복사가 이루어짐   결론     이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 이동 생성자, 이동 대입 연산자를 통해 수행할 수 있다   std::move 함수는 lvalue를 rvalue로 캐스팅하여 이동을 강제할 수 있게 한다">
+
+
+  <meta name="author" content="김재우(thejaeu)">
+  
+  <meta property="article:author" content="김재우(thejaeu)">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="kr_ko">
+<meta property="og:site_name" content="Thejaeu Dev-log">
+<meta property="og:title" content="이동의미론과 std::move">
+<meta property="og:url" content="http://0.0.0.0:4000/c++/move/">
+
+
+  <meta property="og:description" content="이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임   복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함   이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨   이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음   이동 생성자 예시  class MyClass { public: 	MyClass(MyClass&amp;&amp; other) noexcept; // 이동 생성자 	MyClass&amp; operator=(MyClass&amp;&amp; other) noexcept; // 이동 대입 연산자 };      rvalue 를 매개변수로 받아 소유권을 이전시킴   std::move     &lt;utility&gt; 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함   객체를 rvalue로 캐스팅하여 lvalue라 하더라도 강제로 이동할 수 있도록 함            실제 이동은 move 생성자/연산자가 실행될 때 일어남           표준 컨테이너 std::vector, std::string, std::unique_ptr 등은 이동 의미론을 완벽하게 지원함   #include &lt;utility&gt; ... std::vector&lt;int&gt; vec(1000000, 1); std::vector&lt;int&gt; newVec;  newVec = vec; // copy semantics newVec = std::move(vec); // move semantics      std::move 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함   복사할 수 없는 객체에 대해서 이동을 적용할 수 있음   주의     이동생성자나 이동 대입 연산자의 정의가 없을 경우 std::move는 이동이 아닌 복사가 이루어짐   결론     이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 이동 생성자, 이동 대입 연산자를 통해 수행할 수 있다   std::move 함수는 lvalue를 rvalue로 캐스팅하여 이동을 강제할 수 있게 한다">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-11-17T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://0.0.0.0:4000/c++/move/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Thejaeu Dev-log Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  window.enable_copy_code_button = true;
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+ <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide" dir="ltr">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Thejaeu Dev-log
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >About</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/posts/"
+                
+                
+              >Posts</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/categories/"
+                
+                
+              >Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="http://0.0.0.0:4000/">
+        <img src="/assets/images/profile.jpg" alt="김재우(thejaeu)" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://0.0.0.0:4000/" itemprop="url">김재우(thejaeu)</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p><strong>Game Server Developer</strong></p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name" class="p-locality">Seoul/Korea</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@thejaeu.com" rel="nofollow noopener noreferrer me"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            <li><a href="https://github.com/thejae-u" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/thejaeu" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+          
+            <li><a href="https://linkedin.com/in/thejaeu" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="이동의미론과 std::move">
+    <meta itemprop="description" content="  이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임  복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함  이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨  이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음이동 생성자 예시class MyClass{public:	MyClass(MyClass&amp;&amp; other) noexcept; // 이동 생성자	MyClass&amp; operator=(MyClass&amp;&amp; other) noexcept; // 이동 대입 연산자};  rvalue 를 매개변수로 받아 소유권을 이전시킴std::move  &lt;utility&gt; 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함  객체를 rvalue로 캐스팅하여 lvalue라 하더라도 강제로 이동할 수 있도록 함          실제 이동은 move 생성자/연산자가 실행될 때 일어남        표준 컨테이너 std::vector, std::string, std::unique_ptr 등은 이동 의미론을 완벽하게 지원함#include &lt;utility&gt;...std::vector&lt;int&gt; vec(1000000, 1);std::vector&lt;int&gt; newVec;newVec = vec; // copy semanticsnewVec = std::move(vec); // move semantics  std::move 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함  복사할 수 없는 객체에 대해서 이동을 적용할 수 있음주의  이동생성자나 이동 대입 연산자의 정의가 없을 경우 std::move는 이동이 아닌 복사가 이루어짐결론  이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 이동 생성자, 이동 대입 연산자를 통해 수행할 수 있다  std::move 함수는 lvalue를 rvalue로 캐스팅하여 이동을 강제할 수 있게 한다">
+    <meta itemprop="datePublished" content="2025-11-17T00:00:00+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://0.0.0.0:4000/c++/move/" itemprop="url">이동의미론과 std::move
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2025-11-17T00:00:00+00:00">2025-11-17</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <ul>
+  <li>이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 <strong>이전</strong> 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임</li>
+  <li>복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 <strong>이동</strong>시켜 불필요한 데이터 복사를 피함</li>
+  <li>이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, <code class="language-plaintext highlighter-rouge">valid-but-unspecified</code> 상태가 됨</li>
+  <li>이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음</li>
+</ul>
+
+<h4 id="이동-생성자-예시">이동 생성자 예시</h4>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyClass</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+	<span class="n">MyClass</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">noexcept</span><span class="p">;</span> <span class="c1">// 이동 생성자</span>
+	<span class="n">MyClass</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">MyClass</span><span class="o">&amp;&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">noexcept</span><span class="p">;</span> <span class="c1">// 이동 대입 연산자</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">rvalue</code> 를 매개변수로 받아 소유권을 이전시킴</li>
+</ul>
+
+<h2 id="stdmove">std::move</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">&lt;utility&gt;</code> 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함</li>
+  <li>객체를 <code class="language-plaintext highlighter-rouge">rvalue</code>로 캐스팅하여 <code class="language-plaintext highlighter-rouge">lvalue</code>라 하더라도 강제로 이동할 수 있도록 함
+    <ul>
+      <li>실제 이동은 move 생성자/연산자가 실행될 때 일어남</li>
+    </ul>
+  </li>
+  <li>표준 컨테이너 <code class="language-plaintext highlighter-rouge">std::vector</code>, <code class="language-plaintext highlighter-rouge">std::string</code>, <code class="language-plaintext highlighter-rouge">std::unique_ptr</code> 등은 이동 의미론을 완벽하게 지원함</li>
+</ul>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;utility&gt;</span><span class="cp">
+</span><span class="p">...</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">(</span><span class="mi">1000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">newVec</span><span class="p">;</span>
+
+<span class="n">newVec</span> <span class="o">=</span> <span class="n">vec</span><span class="p">;</span> <span class="c1">// copy semantics</span>
+<span class="n">newVec</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">vec</span><span class="p">);</span> <span class="c1">// move semantics</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">std::move</code> 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함</li>
+  <li>복사할 수 없는 객체에 대해서 이동을 적용할 수 있음</li>
+</ul>
+
+<h4 id="주의">주의</h4>
+
+<ul>
+  <li>이동생성자나 이동 대입 연산자의 정의가 없을 경우 <code class="language-plaintext highlighter-rouge">std::move</code>는 이동이 아닌 복사가 이루어짐</li>
+</ul>
+
+<h2 id="결론">결론</h2>
+
+<ul>
+  <li>이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 <strong>이동 생성자</strong>, <strong>이동 대입 연산자</strong>를 통해 수행할 수 있다</li>
+  <li><code class="language-plaintext highlighter-rouge">std::move</code> 함수는 <code class="language-plaintext highlighter-rouge">lvalue</code>를 <code class="language-plaintext highlighter-rouge">rvalue</code>로 캐스팅하여 이동을 강제할 수 있게 한다</li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/#c" class="page__taxonomy-item p-category" rel="tag">c++</a><span class="sep">, </span>
+    
+      <a href="/tags/#cpp" class="page__taxonomy-item p-category" rel="tag">cpp</a><span class="sep">, </span>
+    
+      <a href="/tags/#move" class="page__taxonomy-item p-category" rel="tag">move</a><span class="sep">, </span>
+    
+      <a href="/tags/#std-move" class="page__taxonomy-item p-category" rel="tag">std::move</a><span class="sep">, </span>
+    
+      <a href="/tags/#%EC%9D%B4%EB%8F%99%EC%9D%98%EB%AF%B8%EB%A1%A0" class="page__taxonomy-item p-category" rel="tag">이동의미론</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#c" class="page__taxonomy-item p-category" rel="tag">C++</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2025-11-17T00:00:00+00:00">2025-11-17</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/c++/asio-warning/" class="pagination--pager" title="Boost.asio async 사용 및 주의점">Previous</a>
+    
+    
+      <a href="/c++/lvalue-rvalue/" class="pagination--pager" title="lvalue와 rvalue">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+      
+        <p>
+          Comments are configured with provider: <strong>utterances</strong>,
+          but are disabled in non-production environments.
+        </p>
+      
+    
+  </article>
+
+  
+  
+    
+<div class="page__related">
+  
+  <h2 class="page__related-title">You May Also Enjoy</h2>
+  <div class="grid__wrapper">
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/std-forward/" rel="permalink">핸들러의 완벽한 전달 std::forward
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-15T00:00:00+00:00">2026-01-15</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">std::forward
+
+
+  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
+  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/universal-reference/" rel="permalink">보편참조
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-11T00:00:00+00:00">2026-01-11</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조
+  무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념
+  조건을 만족하는 T&amp;&amp;에 대...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/c++/tag-dispatching-passkey/" rel="permalink">Tag Dispatching과 Passkey Idiom
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-11T00:00:00+00:00">2026-01-11</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Tag Dispatching
+
+정의
+
+
+  C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴
+  함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함
+
+
+예시
+
+#...</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/test/sample/" rel="permalink">Sample
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-01-01T00:00:00+00:00">2026-01-01</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          less than 1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">
+  Sample Post
+
+
+#include &lt;iostream&gt;
+
+int main()
+{
+    std::cout &lt;&lt; "hello world!\n";
+}
+
+</p>
+  </article>
+</div>
+
+    
+  </div>
+</div>
+
+  
+  
+</div>
+
+      
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';" role="search">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        
+
+<div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+      
+        
+      
+        
+          <li><a href="https://github.com/thejae-u" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          <li><a href="https://linkedin.com/in/thejaeu" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> LinkedIn</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+
+<div class="page__footer-copyright">&copy; 2020 - 2026 <a href="http://0.0.0.0:4000">Thejaeu Dev-log</a>. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/jekyll-themes/minimal-mistakes/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+    <script>
+  'use strict';
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'thejae-u/thejae-u.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    
+    script.setAttribute('theme', 'dark-blue');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.setAttribute('async', '');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+
+  </body>
+</html>
