@@ -1,4 +1,91 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-01-30T17:26:22+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">핸들러의 완벽한 전달 std::forward</title><link href="http://0.0.0.0:4000/c++/std-forward/" rel="alternate" type="text/html" title="핸들러의 완벽한 전달 std::forward" /><published>2026-01-15T00:00:00+00:00</published><updated>2026-01-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/std-forward</id><content type="html" xml:base="http://0.0.0.0:4000/c++/std-forward/"><![CDATA[<h2 id="stdforward">std::forward</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-04-09T07:47:58+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">Connection Pool</title><link href="http://0.0.0.0:4000/server/connection-pool/" rel="alternate" type="text/html" title="Connection Pool" /><published>2026-04-09T00:00:00+00:00</published><updated>2026-04-09T00:00:00+00:00</updated><id>http://0.0.0.0:4000/server/connection-pool</id><content type="html" xml:base="http://0.0.0.0:4000/server/connection-pool/"><![CDATA[<h2 id="connection-pool">Connection Pool</h2>
+<ul>
+  <li>매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조</li>
+  <li><code class="language-plaintext highlighter-rouge">ThreadPool</code>과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함</li>
+</ul>
+
+<h2 id="구조">구조</h2>
+
+<p><img src="/assets/images/posts/2026-04-09-connection-pool/connection-pool-structure.png" alt="connection-pool-structure" width="800" /></p>
+
+<ul>
+  <li>클라이언트 측에서 로직 서버로 DB 요청을 하면 로직 서버는 인증 서버와 미리 연결 된 TCP Connection을 Pool에서 받아 해당 Conection으로 로직을 처리</li>
+  <li>완료된 처리에 대해서는 마무리 작업 후 다시 Connection Pool로 반환</li>
+  <li>로직 서버는 <code class="language-plaintext highlighter-rouge">GetConnection()</code>과 <code class="language-plaintext highlighter-rouge">ReturnConnection()</code>과 같은 로직이 구현되어야 함</li>
+</ul>
+
+<h2 id="동작-방식">동작 방식</h2>
+<ol>
+  <li>애플리케이션 시작 시 연결 여러 개를 생성</li>
+  <li>요청이 오면 풀에서 idle connection 하나를 가져옴</li>
+  <li>작업이 끝나면 닫지 않고 풀에 반환</li>
+  <li>풀이 비어 있으면 새 연결을 만들거나 일정시간 대기 후 실패 처리</li>
+</ol>
+
+<h2 id="pool-사용-이점">Pool 사용 이점</h2>
+<ul>
+  <li>미리 연결된 TCP를 사용하기에 실시간 DB 요청이 많은 상황에서 비용이 큰 연결 과정을 제외하고 처리가 가능</li>
+  <li>처리 시간에 대한 시간적 이점이 생김</li>
+</ul>
+
+<h2 id="pool-관리-방법">Pool 관리 방법</h2>
+
+<h3 id="pool-최대-개수">Pool 최대 개수</h3>
+<ul>
+  <li>풀이 최대로 가질 수 있는 연결 개수로<code class="language-plaintext highlighter-rouge">활성 연결 + 대기 연결</code>은 이 값을 넘길 수 없음</li>
+  <li>풀이 너무 크면 서버 리소스의 부담이 커짐 -&gt; 적정 개수 유지를 위한 테스트 필요
+    <ul>
+      <li>서비스의 규모를 파악하는 것이 1순위</li>
+      <li>예) thread/worker 개수와 요청 패턴에 맞춤</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="pool-대기-시간">Pool 대기 시간</h3>
+<ul>
+  <li>풀이 이미 전부 사용 중 일때, 새로운 요청에 대한 최대 대기 시간</li>
+  <li>이 시간을 넘기면 <code class="language-plaintext highlighter-rouge">timeout</code>과 같은 예외로 처리함</li>
+  <li>시간의 적절한 설정이 필요함
+    <ul>
+      <li>너무 짧으면 트래픽이 몰릴 시 유저에게 에러가 빈번하게 발생함</li>
+      <li>너무 길면 유저 체감 레이턴시가 증가함</li>
+    </ul>
+  </li>
+  <li>일반적으로 DB 풀은 <strong>2초 ~ 30초</strong> 사이에서 설정하는 경우가 많음</li>
+  <li>게임서버의 경우 <strong>2000ms ~ 5000ms</strong> 정도로 짧게 설정하고, 에러/재시도 및 재연결을 하도록 설계</li>
+</ul>
+
+<h3 id="pool-유휴-연결-및-유휴-시간">Pool 유휴 연결 및 유휴 시간</h3>
+<blockquote>
+  <p>유휴 연결 : 네트워크나 데이터베이스에서 세션이 맺어져 있으나, 실제 데이터 전송 없이 대기 상태인 연결</p>
+</blockquote>
+
+<h4 id="유휴-연결-수">유휴 연결 수</h4>
+<ul>
+  <li>풀이 최소로 유지할 유휴 연결 개수
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">minimumIdleSize</code> &lt;= <code class="language-plaintext highlighter-rouge">maximumPoolSize</code></li>
+    </ul>
+  </li>
+  <li>풀이 항상 비어 있는 상태를 회피, 초기 요청에 대한 레이턴시를 줄임</li>
+  <li>로직 상 항상 바쁜 상태라면 <code class="language-plaintext highlighter-rouge">minimunIdleSize</code>를 <code class="language-plaintext highlighter-rouge">maximumPoolSize</code>와 같게 두는 편이 좋음
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">minimumIdleSize &lt; maximumPoolSize</code>라는 가정 하에 Idle의 개수가 <code class="language-plaintext highlighter-rouge">minimumIdleSize</code>를 넘으면 풀 정리를 해야하기 때문</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="유휴-연결-시간">유휴 연결 시간</h4>
+<ul>
+  <li>연결이 사용되지 않고 방치된 시간이 이 값만큼 지나면 풀을 정리함(<code class="language-plaintext highlighter-rouge">Close()</code>)
+    <ul>
+      <li>예) <code class="language-plaintext highlighter-rouge">idleTimeout = 300,000(5m)</code> -&gt; 5분 동안 아무도 안쓰면 연결 종료</li>
+    </ul>
+  </li>
+  <li>너무 길게 두면 필요 없는 연결이 오래 남아 FD 자원 낭비로 이어짐</li>
+  <li>너무 짧게 두면 자주 연결이 종료되어 필요 할 때마다 Handshake 비용 발생</li>
+  <li>일반적으로 <strong>5분 ~ 10분</strong>정도로 설정</li>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="Server" /><category term="tcp" /><category term="connection pool" /><category term="network" /><category term="server" /><summary type="html"><![CDATA[Connection Pool 매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조 ThreadPool과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함]]></summary></entry><entry><title type="html">핸들러의 완벽한 전달 std::forward</title><link href="http://0.0.0.0:4000/c++/std-forward/" rel="alternate" type="text/html" title="핸들러의 완벽한 전달 std::forward" /><published>2026-01-15T00:00:00+00:00</published><updated>2026-01-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/std-forward</id><content type="html" xml:base="http://0.0.0.0:4000/c++/std-forward/"><![CDATA[<h2 id="stdforward">std::forward</h2>
 
 <ul>
   <li><code class="language-plaintext highlighter-rouge">std::move</code>는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수</li>
@@ -75,7 +162,7 @@
     </ul>
   </li>
   <li><code class="language-plaintext highlighter-rouge">std::forward&lt;T&gt;(val)</code>에서 <code class="language-plaintext highlighter-rouge">T</code>는 반드시 함수 템플릿 형식의 인자여야 하며, 호출 시 그대로 전달해야 함</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="forward" /><category term="handler" /><category term="c++" /><category term="cpp" /><category term="move" /><summary type="html"><![CDATA[std::forward std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수 std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-value, r-value)를 보존하여 다시 넘겨주는 함수 L-Value로 들어왔으면 L-Value로, R-Value로 들어왔으면 R-Value로 캐스팅 됨 기본 형태 template &lt;typename T, typename... Args&gt; void wrapper(T&amp;&amp; t, Args&amp;&amp;... args) { callee(std::forward&lt;T&gt;(t), std::forward&lt;Args&gt;(args)...); } L-Value 인자가 들어오면 T는 T&amp;로 추론되며 std::forward&lt;T&gt;(t)는 L-Value로 캐스팅 됨 R-Value 인자가 들어오면 T는 그대로 T로 추론되며 std::forward&lt;T&gt;(t)는 R-Value로 캐스팅 됨 대표적인 예시 래퍼/팩토리/헬퍼 함수에서 인자를 있는 그대로 다른 함수/생성자에게 넘길 때 template &lt;typename T, typename... Args&gt; std::unique_ptr&lt;T&gt; make_ptr(Args&amp;&amp;... args) { return std::unique_ptr&lt;T&gt;( new T(std::forward&lt;Args&gt;(args)...) ); } 컨테이너의 emplace template &lt;typename... Args&gt; void emplace_back(Args&amp;&amp;... args) { new (&amp;storage[size]) T(std::forward&lt;Args&gt;(args)...); ++size; } // forward를 통해 l-value 인자는 복사, r-value 인자는 이동이 됨 핸들러의 완벽한 전달 // ContextManager.h class ContextManager { // ... public: template &lt;typename CompletionHandler&gt; auto RegisterWork(CompletionHandler handler) { asio::post(_io, std::forward&lt;CompletionHandler&gt;(handler)); } // ... }; Asio 라이브러리를 사용하면서 io_context에 대한 래퍼 클래스를 통해 post함수를 RegisterWork로 제공하면서 기존의 asio.post를 사용하는 것과 동일하게 핸들러를 전달하도록 하기위해 std::forward를 사용하여 호출 당시 핸들러 함수를 그대로 asio.post에 전달하도록 함 주의점 보편 참조(Universal Reference)가 아닌 평범한 인자에는 std::forward를 사용하지 않음 템플릿 인자에만 사용하는것이 원칙 std::forward&lt;T&gt;(val)에서 T는 반드시 함수 템플릿 형식의 인자여야 하며, 호출 시 그대로 전달해야 함]]></summary></entry><entry><title type="html">Tag Dispatching과 Passkey Idiom</title><link href="http://0.0.0.0:4000/c++/tag-dispatching-passkey/" rel="alternate" type="text/html" title="Tag Dispatching과 Passkey Idiom" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/tag-dispatching-passkey</id><content type="html" xml:base="http://0.0.0.0:4000/c++/tag-dispatching-passkey/"><![CDATA[<h2 id="tag-dispatching">Tag Dispatching</h2>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="forward" /><category term="handler" /><category term="c++" /><category term="cpp" /><category term="move" /><summary type="html"><![CDATA[std::forward]]></summary></entry><entry><title type="html">Tag Dispatching과 Passkey Idiom</title><link href="http://0.0.0.0:4000/c++/tag-dispatching-passkey/" rel="alternate" type="text/html" title="Tag Dispatching과 Passkey Idiom" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/tag-dispatching-passkey</id><content type="html" xml:base="http://0.0.0.0:4000/c++/tag-dispatching-passkey/"><![CDATA[<h2 id="tag-dispatching">Tag Dispatching</h2>
 
 <h3 id="정의">정의</h3>
 
@@ -208,7 +295,7 @@
 
 <ul>
   <li>따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="tag dispatching" /><category term="passkey idiom" /><category term="c++" /><category term="cpp" /><category term="private tag" /><summary type="html"><![CDATA[Tag Dispatching 정의 C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴 함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함 예시 #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt; template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { std::cout &lt;&lt; "O(1) Access\n"; it += n; } template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { std::cout &lt;&lt; "O(N) Access\n"; for (int i = 0; i &lt; n; ++i) ++it; } template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); } int main() { std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; auto vIt = v.begin(); Func(vIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *vIt &lt;&lt; '\n'; std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; auto lIt = l.begin(); Func(lIt, 3); std::cout &lt;&lt; "value: " &lt;&lt; *lIt &lt;&lt; '\n'; } FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음 컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨 결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨 C++ 17 template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) { it += n; } else { for(int i = 0; i &lt; n; ++i) ++it; } } C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음 태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다 Passkey Idiom (private tag) 사용방법 스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나 class A { private: struct SecretKey {}; public: explicit A(SecretKey) { std::cout &lt;&lt; "Make A by Secret Key\n"; } static auto Create() { auto newA = std::make_shared&lt;A&gt;(SecretKey{}); return newA; } private: }; int main() { auto validA = A::Create(); // 정상 작동 auto invalidA = new A(); // 컴파일 에러 } 생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함 사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음 주의점 스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음 이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함 결론 따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함]]></summary></entry><entry><title type="html">보편참조</title><link href="http://0.0.0.0:4000/c++/universal-reference/" rel="alternate" type="text/html" title="보편참조" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/universal-reference</id><content type="html" xml:base="http://0.0.0.0:4000/c++/universal-reference/"><![CDATA[<ul>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="tag dispatching" /><category term="passkey idiom" /><category term="c++" /><category term="cpp" /><category term="private tag" /><summary type="html"><![CDATA[Tag Dispatching]]></summary></entry><entry><title type="html">보편참조</title><link href="http://0.0.0.0:4000/c++/universal-reference/" rel="alternate" type="text/html" title="보편참조" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/universal-reference</id><content type="html" xml:base="http://0.0.0.0:4000/c++/universal-reference/"><![CDATA[<ul>
   <li>상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 <code class="language-plaintext highlighter-rouge">T&amp;&amp;</code> 형태의 참조</li>
   <li>무조건 rvalue 참조인 일반적인 <code class="language-plaintext highlighter-rouge">T&amp;&amp;</code> 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념</li>
   <li>조건을 만족하는 <code class="language-plaintext highlighter-rouge">T&amp;&amp;</code>에 대해 인자에 따라 다음과 같이 동작함
@@ -274,7 +361,7 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>출력 결과
 value is r value
 value is l value
-</code></pre></div></div>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="references" /><category term="universal references" /><category term="보편참조" /><summary type="html"><![CDATA[상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조 무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념 조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함 lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조) rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조) 대표적인 패턴 template &lt;typename T&gt; void Func(T&amp;&amp; val); // val은 보편참조 가능 함수 템플릿 매개변수 auto&amp;&amp; val = expr; // var는 보편참조 auto&amp;&amp; 변수 보편 참조가 아닌 경우 T&amp;&amp; 가 모두 보편 참조인 것은 아님 다음의 경우는 모두 보편참조가 아님 void Func(Widget&amp;&amp; val); // 템플릿이 아님 -&gt; rvalue 참조 template &lt;typename T&gt; void Func(std::vector&lt;T&gt;&amp;&amp; val); // T는 추론됨 그러나 val 타입 형태가 T&amp;&amp;가 아님 -&gt; rvalue 참조 template &lt;typename T&gt; void Func(const T&amp;&amp; val); // const T&amp;&amp; -&gt; rvalue 참조 예제 코드 #include &lt;iostream&gt; #include &lt;type_traits&gt; template &lt;typename T&gt; void Func(T&amp;&amp; val) // Universal reference { if(std::is_rvalue_reference&lt;decltype(val)&gt;::value) std::cout &lt;&lt; "value is r value\n"; else if(std::is_lvalue_reference&lt;decltype(val)&gt;::value) std::cout &lt;&lt; "value is l value\n"; } int main() { Func(3); int x=10; Func(x); } 출력 결과 value is r value value is l value]]></summary></entry><entry><title type="html">Sample</title><link href="http://0.0.0.0:4000/test/sample/" rel="alternate" type="text/html" title="Sample" /><published>2026-01-01T00:00:00+00:00</published><updated>2026-01-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/test/sample</id><content type="html" xml:base="http://0.0.0.0:4000/test/sample/"><![CDATA[<ul>
+</code></pre></div></div>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="references" /><category term="universal references" /><category term="보편참조" /><summary type="html"><![CDATA[상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조 무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념 조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함 lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조) rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조)]]></summary></entry><entry><title type="html">Sample</title><link href="http://0.0.0.0:4000/test/sample/" rel="alternate" type="text/html" title="Sample" /><published>2026-01-01T00:00:00+00:00</published><updated>2026-01-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/test/sample</id><content type="html" xml:base="http://0.0.0.0:4000/test/sample/"><![CDATA[<ul>
   <li>Sample Post</li>
 </ul>
 
@@ -284,7 +371,7 @@ value is l value
 <span class="p">{</span>
     <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"hello world!</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>김재우(thejaeu)</name></author><category term="Test" /><category term="Test" /><category term="First" /><summary type="html"><![CDATA[Sample Post #include &lt;iostream&gt; int main() { std::cout &lt;&lt; "hello world!\n"; }]]></summary></entry><entry><title type="html">C++ random_device</title><link href="http://0.0.0.0:4000/c++/random-device/" rel="alternate" type="text/html" title="C++ random_device" /><published>2025-12-28T00:00:00+00:00</published><updated>2025-12-28T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/random-device</id><content type="html" xml:base="http://0.0.0.0:4000/c++/random-device/"><![CDATA[<h2 id="기본-사용">기본 사용</h2>
+</code></pre></div></div>]]></content><author><name>김재우(thejaeu)</name></author><category term="Test" /><category term="Test" /><category term="First" /><summary type="html"><![CDATA[Sample Post]]></summary></entry><entry><title type="html">C++ random_device</title><link href="http://0.0.0.0:4000/c++/random-device/" rel="alternate" type="text/html" title="C++ random_device" /><published>2025-12-28T00:00:00+00:00</published><updated>2025-12-28T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/random-device</id><content type="html" xml:base="http://0.0.0.0:4000/c++/random-device/"><![CDATA[<h2 id="기본-사용">기본 사용</h2>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;random&gt;</span><span class="cp">
 </span>
@@ -383,7 +470,7 @@ value is l value
 
 <ul>
   <li><code class="language-plaintext highlighter-rouge">normal_distribution</code>의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="random_device" /><category term="mt19937" /><summary type="html"><![CDATA[기본 사용 #include &lt;random&gt; // ... std::random_device seed; std::mt19937 generator(seed()); auto rNumber = generator(); // ... &lt;random&gt; 헤더를 통해 random_device를 초기화 하고 mt19937(유사 난수 생성기)를 해당 random_device로 초기화 함 mt19937에는 operator()가 정의 되어있으며 호출만 하면 난수가 생성이 됨 random number distribution 정수 균등 분포 생성 #include &lt;random&gt; // ... std::random_device seed; std::mt19937 generator(seed()); std::uniform_int_distribution&lt;&gt; dis(0, 100); // inclusive 0 and 100 for(int i=0;i&lt;100;++i) auto num = dis(gen); // 0부터 100까지 균등한 확률로 생성됨 // ... uniform_int_distribution을 통해 균등 분포된 값을 생성할 수 있음 정수 정규 분포 생성 ```cpp #include &lt;random&gt; // ... std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;&gt; dis(50, 10); // mean 50, stddev 10 for(int i=0;i&lt;100;++i) auto num = dis(gen); // 100 개의 난수가 평균 50이 나오도록 표준편차 10으로 생성됨 // ... normal_distribution을 통해 정규 분포된 값을 생성할 수 있음 실수 균등 분포 생성 #include &lt;random&gt; // ... std::random_device seed; std::mt19937 generator(seed()); std::uniform_real_distribution&lt;&gt; dis(-100, 100); // inclusive -100 and 100 for(int i=0;i&lt;100;++i) auto num = dis(gen); // double 타입의 값을 return 함 // ... uniform_real_distribution을 통해 균등 분포 된 실수 값을 생성할 수 있음 실수 정규 분포 생성 #include &lt;random&gt; // ... std::random_device seed; std::mt19937 generator(seed()); std::normal_distribution&lt;double&gt; dis(0, 8); // mean 0, stddev 8 for(int i=0;i&lt;100;++i) auto num = dis(gen); // double 타입의 값을 return 함 // ... normal_distribution의 타입 명시를 통해 정규 분포된 실수 값을 생성할 수 있음]]></summary></entry><entry><title type="html">스마트 포인터 순환 참조 문제</title><link href="http://0.0.0.0:4000/c++/smart-pointer/" rel="alternate" type="text/html" title="스마트 포인터 순환 참조 문제" /><published>2025-12-27T00:00:00+00:00</published><updated>2025-12-27T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/smart-pointer</id><content type="html" xml:base="http://0.0.0.0:4000/c++/smart-pointer/"><![CDATA[<ul>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="random_device" /><category term="mt19937" /><summary type="html"><![CDATA[기본 사용]]></summary></entry><entry><title type="html">스마트 포인터 순환 참조 문제</title><link href="http://0.0.0.0:4000/c++/smart-pointer/" rel="alternate" type="text/html" title="스마트 포인터 순환 참조 문제" /><published>2025-12-27T00:00:00+00:00</published><updated>2025-12-27T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/smart-pointer</id><content type="html" xml:base="http://0.0.0.0:4000/c++/smart-pointer/"><![CDATA[<ul>
   <li>개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 <code class="language-plaintext highlighter-rouge">shared_ptr</code>의 상호 참조 문제가 발생하였다</li>
   <li>메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다</li>
 </ul>
@@ -491,7 +578,7 @@ value is l value
 
 <ul>
   <li>위와 같은 방식으로 shared_ptr로 초기화 된 a 객체에 대해서 약한 참조를 할 때 <code class="language-plaintext highlighter-rouge">lock()</code>을 통해 객체가 유효한지 확인 할 수 있으며 <code class="language-plaintext highlighter-rouge">lock()</code>은 shared_ptr을 반환함</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="C++" /><category term="스마트포인터" /><category term="memory" /><category term="순환참조" /><summary type="html"><![CDATA[개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다 메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다 문제점 shared_ptr은 하나의 메모리를 여러 객체가 공유하고자 할 때 사용할 수 있음 당연하게도 A라는 클래스에 대한 shared_ptr을 B라는 클래스의 객체가 소유할 수 있음 Class A { public: A() {} std::shared_ptr&lt;B&gt; b; }; Class B { public: B() {} std::shared_ptr&lt;A&gt; a; } int main() { auto a = std::make_shared&lt;A&gt;(); auto b = std::make_shared&lt;B&gt;(); // 서로 참조 횟수 증가 a-&gt;b = b; b-&gt;a = a; } 위와 같은 코드는 shared_ptr의 잘못된 사용의 예시임 A 가 B 에 대한 shared_ptr을 소유하고 B 가 A 에 대한 shared_ptr을 소유하는 순환 참조 문제가 일어남 shared_ptr은 참조 카운트를 내부적으로 가지고 있으며 참조 카운트가 0이 될 경우 소멸하는 로직을 가지고있음 결론적으로 객체가 소멸되어야 할 타이밍에 소멸되지 못하고 메모리 누수가 발생함 해결 방법 순환 참조가 일어날 가능성이 있는 구조에서는 weak_ptr을 사용하여 소유권을 가지지 않도록 해야함 class A { public: A() { std::cout &lt;&lt; "Created A\n"; } ~A() { std::cout &lt;&lt; "Destroyed A\n"; } std::weak_ptr&lt;B&gt; b; }; class B { public: B() { std::cout &lt;&lt; "Created B\n"; } ~B() { std::cout &lt;&lt; "Destoryed B\n"; } std::weak_ptr&lt;A&gt; a; }; int main() { auto a = std::make_shared&lt;A&gt;(); auto b = std::make_shared&lt;B&gt;(); a-&gt;b = b; b-&gt;a = a; } weak_ptr로 공유를 받게 될 경우 참조 카운트를 증가시키지 않고 shared_ptr의 weak 카운트를 증가시키며 이는 객체의 소멸 조건에 영향을 주지 않음 결론적으로 참조 카운트는 0이 되며 안전하게 소멸자를 호출함 shared_ptr의 구조 shared_ptr은 메모리 블록에 실제 데이터 메모리 영역과 이를 관리하는 컨트롤 블록(Control Block)영역으로 나뉨 이때 컨트롤 블록은 참조 카운트, weak 카운트 (약한 참조), 객체 소멸자 포인터 등 해당 메모리를 관리하기 위한 정보들로 이루어져있음 참조 카운트가 0이 되면 객체는 소멸함, 그러나 weak 카운트가 0이 아니라면 컨트롤 블록은 소멸하지 않음 소멸 체크를 위한 로직 auto a = std::make_shared&lt;A&gt;(); // 여기서 자동으로 약한 참조 std::weak_ptr&lt;A&gt; weakA = a; if(auto sharedA = weakA.lock()) { sharedA-&gt;DoSomething(); } 위와 같은 방식으로 shared_ptr로 초기화 된 a 객체에 대해서 약한 참조를 할 때 lock()을 통해 객체가 유효한지 확인 할 수 있으며 lock()은 shared_ptr을 반환함]]></summary></entry><entry><title type="html">lvalue와 rvalue</title><link href="http://0.0.0.0:4000/c++/lvalue-rvalue/" rel="alternate" type="text/html" title="lvalue와 rvalue" /><published>2025-12-15T00:00:00+00:00</published><updated>2025-12-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/lvalue-rvalue</id><content type="html" xml:base="http://0.0.0.0:4000/c++/lvalue-rvalue/"><![CDATA[<h2 id="lvalue">lvalue</h2>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="C++" /><category term="스마트포인터" /><category term="memory" /><category term="순환참조" /><summary type="html"><![CDATA[개인 프로젝트를 진행하면서 안전한 포인터 사용을 위해 스마트 포인터를 사용하였지만 사용 미숙으로 인해 shared_ptr의 상호 참조 문제가 발생하였다 메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다]]></summary></entry><entry><title type="html">lvalue와 rvalue</title><link href="http://0.0.0.0:4000/c++/lvalue-rvalue/" rel="alternate" type="text/html" title="lvalue와 rvalue" /><published>2025-12-15T00:00:00+00:00</published><updated>2025-12-15T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/lvalue-rvalue</id><content type="html" xml:base="http://0.0.0.0:4000/c++/lvalue-rvalue/"><![CDATA[<h2 id="lvalue">lvalue</h2>
 
 <ul>
   <li>메모리 주소가 존재하며 식별자가 있는 표현식</li>
@@ -573,8 +660,8 @@ value is l value
   <li><strong>복사 대신 이동</strong>이 가능해져 컨테이너, 함수 반환값 등에서 불필요한 복사 오버헤드를 줄임</li>
   <li>함수 오버로딩 시 <code class="language-plaintext highlighter-rouge">lvalue</code>참조(<code class="language-plaintext highlighter-rouge">T&amp;</code>)와 <code class="language-plaintext highlighter-rouge">rvalue</code>참조(<code class="language-plaintext highlighter-rouge">T&amp;&amp;</code>)의 <strong>구분이 가능</strong>해져 상황에 맞는 최적화 함수 제공 가능</li>
   <li>임시 객체를 수정하거나 자원을 옮기는 <strong>이동 생성자</strong> / <strong>이동 대입 연산자</strong>의 구현에 필수적</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="lvalue" /><category term="rvalue" /><category term="c++" /><category term="cpp" /><summary type="html"><![CDATA[lvalue 메모리 주소가 존재하며 식별자가 있는 표현식 참조나 대입이 가능, &amp;연산자로 주소를 가져올 수 있음 변수 이름, 배열요소, 반환값이 참조형인 함수 등은 lvalue의 대표적인 예시임 int x = 10; // x -&gt; lvalue int* p = &amp;x; // x의 주소를 받아 올 수 있음 rvalue 메모리 주소가 없거나 사용자가 접근할 수 없는 임시 값 대부분의 리터럴, 임시 계산 결과, 덧셈 등의 연산 결과에서 생성된 값 참조할 수 없으며 대입의 오른쪽에만 올 수 있음 int y = 5 + x; // 5와 x+5는 rvalue lvalue는 rvalue로 변환될 수 있음 x + y에서 x, y는 lvalue지만 덧셈의 결과는 rvalue int x = 5; // x -&gt; lvalue int y = x + 2; // x + 2 연산 시 x는 rvalue로 변환 됨 모든 lvalue가 항상 변환되는 것이 아닌 변환이 필요한 시점에만 변환이 일어남 반대로 rvalue를 lvalue로 변환하는 것은 불가능, 변환 시 임시 객체가 생성 됨 rvalue 참조(T&amp;&amp;)는 rvalue에 대해서 참조할 수 있게 하며 이동 의미론 등 자원 관리에 쓰임 rvalue 참조 임시 값(rvalue)만을 참조할 수 있는 참조 타입으로 문법은 T&amp;&amp;로 표기함 rvalue는 보통 표현식에서 생성된 값, 리터럴 등 일회성 값을 의미하며 등호(=)의 우측에만 올 수 있어 수정이 불가능함 rvalue 참조 타입으로 선언하면 기존에는 접근 할 수 없었던 임시 객체를 참조할 수 있음 이동 생성자와 이동 연산자 등에 활용 int&amp;&amp; c = a + 1; // a + 1의 결과 rvalue를 c가 참조 rvalue 참조는 이동 의미론과 함께 사용되어 std::move를 통해 자원을 효율적으로 이전하는 것에 활용됨 특징과 역할 이름이 없는 임시 객체와 리터럴 등의 rvalue만을 참조할 수 있음 int&amp;&amp; a = 3; 처럼 rvalue 만 할당 가능 lvalue 에는 rvalue 참조를 할당할 수 없음 int&amp;&amp; c = a; 와같은 문법은 오류임 rvalue 참조의 주된 목적은 임시 객체에 대한 자원 이동을 가능하게 하여 불필요한 복사 비용을 줄이고 성능을 개선하는 데 있음 장점 복사 대신 이동이 가능해져 컨테이너, 함수 반환값 등에서 불필요한 복사 오버헤드를 줄임 함수 오버로딩 시 lvalue참조(T&amp;)와 rvalue참조(T&amp;&amp;)의 구분이 가능해져 상황에 맞는 최적화 함수 제공 가능 임시 객체를 수정하거나 자원을 옮기는 이동 생성자 / 이동 대입 연산자의 구현에 필수적]]></summary></entry><entry><title type="html">이동의미론과 std::move</title><link href="http://0.0.0.0:4000/c++/move/" rel="alternate" type="text/html" title="이동의미론과 std::move" /><published>2025-11-17T00:00:00+00:00</published><updated>2025-11-17T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/move</id><content type="html" xml:base="http://0.0.0.0:4000/c++/move/"><![CDATA[<ul>
-  <li>이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 <strong>이전</strong> 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임</li>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="lvalue" /><category term="rvalue" /><category term="c++" /><category term="cpp" /><summary type="html"><![CDATA[lvalue]]></summary></entry><entry><title type="html">이동의미론과 std::move</title><link href="http://0.0.0.0:4000/c++/move/" rel="alternate" type="text/html" title="이동의미론과 std::move" /><published>2025-11-17T00:00:00+00:00</published><updated>2025-11-17T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/move</id><content type="html" xml:base="http://0.0.0.0:4000/c++/move/"><![CDATA[<ul>
+  <li>이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 <strong>이전</strong> 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임</li>
   <li>복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 <strong>이동</strong>시켜 불필요한 데이터 복사를 피함</li>
   <li>이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, <code class="language-plaintext highlighter-rouge">valid-but-unspecified</code> 상태가 됨</li>
   <li>이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음</li>
@@ -631,7 +718,7 @@ value is l value
 <ul>
   <li>이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 <strong>이동 생성자</strong>, <strong>이동 대입 연산자</strong>를 통해 수행할 수 있다</li>
   <li><code class="language-plaintext highlighter-rouge">std::move</code> 함수는 <code class="language-plaintext highlighter-rouge">lvalue</code>를 <code class="language-plaintext highlighter-rouge">rvalue</code>로 캐스팅하여 이동을 강제할 수 있게 한다</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="std::move" /><category term="move" /><category term="이동의미론" /><summary type="html"><![CDATA[이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임 복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함 이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨 이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음 이동 생성자 예시 class MyClass { public: MyClass(MyClass&amp;&amp; other) noexcept; // 이동 생성자 MyClass&amp; operator=(MyClass&amp;&amp; other) noexcept; // 이동 대입 연산자 }; rvalue 를 매개변수로 받아 소유권을 이전시킴 std::move &lt;utility&gt; 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함 객체를 rvalue로 캐스팅하여 lvalue라 하더라도 강제로 이동할 수 있도록 함 실제 이동은 move 생성자/연산자가 실행될 때 일어남 표준 컨테이너 std::vector, std::string, std::unique_ptr 등은 이동 의미론을 완벽하게 지원함 #include &lt;utility&gt; ... std::vector&lt;int&gt; vec(1000000, 1); std::vector&lt;int&gt; newVec; newVec = vec; // copy semantics newVec = std::move(vec); // move semantics std::move 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함 복사할 수 없는 객체에 대해서 이동을 적용할 수 있음 주의 이동생성자나 이동 대입 연산자의 정의가 없을 경우 std::move는 이동이 아닌 복사가 이루어짐 결론 이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 이동 생성자, 이동 대입 연산자를 통해 수행할 수 있다 std::move 함수는 lvalue를 rvalue로 캐스팅하여 이동을 강제할 수 있게 한다]]></summary></entry><entry><title type="html">Boost.asio async 사용 및 주의점</title><link href="http://0.0.0.0:4000/c++/asio-warning/" rel="alternate" type="text/html" title="Boost.asio async 사용 및 주의점" /><published>2024-12-06T00:00:00+00:00</published><updated>2024-12-06T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/asio-warning</id><content type="html" xml:base="http://0.0.0.0:4000/c++/asio-warning/"><![CDATA[<h2 id="boostasio-async_write">Boost.Asio async_write</h2>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="std::move" /><category term="move" /><category term="이동의미론" /><summary type="html"><![CDATA[이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임 복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함 이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨 이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음]]></summary></entry><entry><title type="html">Boost.asio async 사용 및 주의점</title><link href="http://0.0.0.0:4000/c++/asio-warning/" rel="alternate" type="text/html" title="Boost.asio async 사용 및 주의점" /><published>2024-12-06T00:00:00+00:00</published><updated>2024-12-06T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/asio-warning</id><content type="html" xml:base="http://0.0.0.0:4000/c++/asio-warning/"><![CDATA[<h2 id="boostasio-async_write">Boost.Asio async_write</h2>
 
 <ul>
   <li>
@@ -726,34 +813,4 @@ value is l value
 
 <ul>
   <li>async_write() 와 같은 비동기 처리 로직이 있다면 스마트 포인터를 적극 활용하여 안전한 비동기 처리를 할 수 있도록 해야 함</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="C++" /><category term="boost.asio" /><category term="asio" /><category term="async" /><category term="dangling-pointer" /><summary type="html"><![CDATA[Boost.Asio async_write Boost.Asio 라이브러리의 async_write를 사용하는 방법은 다음과 같음 boost::asio::async_write(s, boost::asio::buffer(data, size), handler); 각 Parameter는 AsyncWirteStream, ConstBufferSequence, WriteHandler로 되어있음 두 번째 Parameter에는 string과 같이 서버 혹은 클라이언트로 보낼 데이터가 들어가게 되며, 공식 Document에서는 Boost.Asio 라이브러리의 buffer를 사용하도록 권장함 Example void write(std::string message) { auto self(shared_from_this()); boost::asio::async_write(_socket, boost::asio::buffer(message), [self, message](boost::system::error_code ec, std::size_t) { if(ec) { std::cerr &lt;&lt; "Error: " &lt;&lt; ec.message() &lt;&lt; "\n"; return; } self-&gt;read(); // 다음 데이터 전송을 대기하기 위한 호출 }); } 예시 코드에서는 Write를 호출하면서 매개변수로 shared_ptr을 넘겨주게 되어있으며 async_write에 매개변수를 넘겨줄 때에는 message를 boost::asio::buffer를 통해 넘겨줌 또한 Handler는 Lambda를 통해서 매개변수를 넘겨주었음 주의할 점 Async 함수 내의 로컬 변수를 handler에서 사용할 가능성이 있다면 메모리 해제를 방지해야 함 예제에서의 message에 대한 관리 공식 문서에는 다음과 같이 설명되어 있음 One or more buffers containing the data to be written. Although the buffers object may be copied as necessary, ownership of the underlying memory blocks is retained by the caller, which must guarantee that they remain valid until the handler is called. 기록할 데이터가 포함된 하나 이상의 버퍼. 버퍼 개체는 필요에 따라 복사할 수 있지만 기본 메모리 블록의 소유권은 호출자가 유지하므로 핸들러가 호출될 때까지 유효하게 유지되어야 합니다. (papago 번역) 쉽게 말하자면 예제에서의 message는 handler가 호출 될 때 까지 유효해야 한다는 것 이와 같이 공식 문서에서도 메모리 관리에 대해 주의해야 한다고 되어있음 해결 방안 스마트 포인터의 사용 void write(std::shared_ptr&lt;std::string&gt; message) { auto self(shared_from_this()); boost::asio::async_write(_socket, boost::asio::buffer(*message), [self, message](boost::system::error_code ec, std::size_t) { if(ec) { std::cerr &lt;&lt; "Error: " &lt;&lt; ec.message() &lt;&lt; "\n"; return; } self-&gt;read(); }); } message 자체를 shared_ptr 로 관리하며 참조 count를 통해 소멸 시점을 늦춤 공식 문서에서 권장하는 방식과 부합하며 비동기적인 처리를 할 수 있는 가장 편하고 안전한 방법이라고 생각하여 사용하게 됨 결론 async_write() 와 같은 비동기 처리 로직이 있다면 스마트 포인터를 적극 활용하여 안전한 비동기 처리를 할 수 있도록 해야 함]]></summary></entry><entry><title type="html">FMOD Unity .gitignore</title><link href="http://0.0.0.0:4000/unity/fmod-gitignore/" rel="alternate" type="text/html" title="FMOD Unity .gitignore" /><published>2024-11-13T00:00:00+00:00</published><updated>2024-11-13T00:00:00+00:00</updated><id>http://0.0.0.0:4000/unity/fmod-gitignore</id><content type="html" xml:base="http://0.0.0.0:4000/unity/fmod-gitignore/"><![CDATA[<blockquote>
-  <p>참고 : FMOD .gitignore</p>
-</blockquote>
-
-<ul>
-  <li>FMOD 프로젝트를 Github에 올리고 관리하기 위해서 추적하는 파일들을 보니 너무 많고 올리지 않아도 되는 파일들이 딸려 들어오는것을 보게 되었다.</li>
-  <li>바로 gitignore 파일이 있는지 확인 해 보았고 위 참고 사이트에서 사용한 gitignore 파일을 적용하니 필요한 파일만 올라가게 되었다.</li>
-</ul>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>### FMOD Unity Integration ###
-# Never ignore DLLs in the FMOD subfolder, so make sure that the FMOD-folder is in the correct path.
-!/[Aa]ssets/Plugins/FMOD/**/*.dll
-
-# Don't ignore images and gizmos used by FMOD in the Unity Editor
-!/[Aa}ssets/Gizmos/FMOD/*
-!/[Aa}ssets/Editor Default Resources/FMOD/*
-
-# Ignore the Cache-file since it is updated locally either way
-/[Aa]ssets/**/FMODStudioCache.asset
-/[Aa]ssets/**/FMODStudioCache.asset.meta
-/[Aa]ssets/Plugins/FMOD/Cache.meta
-/[Aa]ssets/Plugins/FMOD/Cache/Editor.meta
-
-# Log-files
-fmod.log
-fmod_editor.log
-
-# FMOD 1.10.x (Legacy)
-/Assets/FMODAssets/*
-/Assets/FMODStudioCache.meta
-</code></pre></div></div>]]></content><author><name>김재우(thejaeu)</name></author><category term="Unity" /><category term="Unity" /><category term="git" /><category term="gitignore" /><summary type="html"><![CDATA[참고 : FMOD .gitignore FMOD 프로젝트를 Github에 올리고 관리하기 위해서 추적하는 파일들을 보니 너무 많고 올리지 않아도 되는 파일들이 딸려 들어오는것을 보게 되었다. 바로 gitignore 파일이 있는지 확인 해 보았고 위 참고 사이트에서 사용한 gitignore 파일을 적용하니 필요한 파일만 올라가게 되었다. ### FMOD Unity Integration ### # Never ignore DLLs in the FMOD subfolder, so make sure that the FMOD-folder is in the correct path. !/[Aa]ssets/Plugins/FMOD/**/*.dll # Don't ignore images and gizmos used by FMOD in the Unity Editor !/[Aa}ssets/Gizmos/FMOD/* !/[Aa}ssets/Editor Default Resources/FMOD/* # Ignore the Cache-file since it is updated locally either way /[Aa]ssets/**/FMODStudioCache.asset /[Aa]ssets/**/FMODStudioCache.asset.meta /[Aa]ssets/Plugins/FMOD/Cache.meta /[Aa]ssets/Plugins/FMOD/Cache/Editor.meta # Log-files fmod.log fmod_editor.log # FMOD 1.10.x (Legacy) /Assets/FMODAssets/* /Assets/FMODStudioCache.meta]]></summary></entry></feed>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="C++" /><category term="boost.asio" /><category term="asio" /><category term="async" /><category term="dangling-pointer" /><summary type="html"><![CDATA[Boost.Asio async_write]]></summary></entry></feed>

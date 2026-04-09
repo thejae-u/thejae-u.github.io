@@ -11,7 +11,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>보편참조 - Thejaeu Dev-log</title>
-<meta name="description" content="상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조   무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념   조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함            lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조)       rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조)           대표적인 패턴  template &lt;typename T&gt; void Func(T&amp;&amp; val); // val은 보편참조 가능      함수 템플릿 매개변수   auto&amp;&amp; val = expr; // var는 보편참조      auto&amp;&amp; 변수   보편 참조가 아닌 경우     T&amp;&amp; 가 모두 보편 참조인 것은 아님   다음의 경우는 모두 보편참조가 아님   void Func(Widget&amp;&amp; val); // 템플릿이 아님 -&gt; rvalue 참조  template &lt;typename T&gt; void Func(std::vector&lt;T&gt;&amp;&amp; val); // T는 추론됨 그러나 val 타입 형태가 T&amp;&amp;가 아님 -&gt; rvalue 참조  template &lt;typename T&gt; void Func(const T&amp;&amp; val); // const T&amp;&amp; -&gt; rvalue 참조   예제 코드  #include &lt;iostream&gt; #include &lt;type_traits&gt; template &lt;typename T&gt; void Func(T&amp;&amp; val) // Universal reference { 	if(std::is_rvalue_reference&lt;decltype(val)&gt;::value) 		std::cout &lt;&lt; &quot;value is r value\n&quot;; 	else if(std::is_lvalue_reference&lt;decltype(val)&gt;::value) 		std::cout &lt;&lt; &quot;value is l value\n&quot;; } int main() { 	Func(3); 	int x=10; 	Func(x); }   출력 결과 value is r value value is l value">
+<meta name="description" content="상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조   무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념   조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함            lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조)       rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조)">
 
 
   <meta name="author" content="김재우(thejaeu)">
@@ -27,7 +27,7 @@
 <meta property="og:url" content="http://0.0.0.0:4000/c++/universal-reference/">
 
 
-  <meta property="og:description" content="상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조   무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념   조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함            lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조)       rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조)           대표적인 패턴  template &lt;typename T&gt; void Func(T&amp;&amp; val); // val은 보편참조 가능      함수 템플릿 매개변수   auto&amp;&amp; val = expr; // var는 보편참조      auto&amp;&amp; 변수   보편 참조가 아닌 경우     T&amp;&amp; 가 모두 보편 참조인 것은 아님   다음의 경우는 모두 보편참조가 아님   void Func(Widget&amp;&amp; val); // 템플릿이 아님 -&gt; rvalue 참조  template &lt;typename T&gt; void Func(std::vector&lt;T&gt;&amp;&amp; val); // T는 추론됨 그러나 val 타입 형태가 T&amp;&amp;가 아님 -&gt; rvalue 참조  template &lt;typename T&gt; void Func(const T&amp;&amp; val); // const T&amp;&amp; -&gt; rvalue 참조   예제 코드  #include &lt;iostream&gt; #include &lt;type_traits&gt; template &lt;typename T&gt; void Func(T&amp;&amp; val) // Universal reference { 	if(std::is_rvalue_reference&lt;decltype(val)&gt;::value) 		std::cout &lt;&lt; &quot;value is r value\n&quot;; 	else if(std::is_lvalue_reference&lt;decltype(val)&gt;::value) 		std::cout &lt;&lt; &quot;value is l value\n&quot;; } int main() { 	Func(3); 	int x=10; 	Func(x); }   출력 결과 value is r value value is l value">
+  <meta property="og:description" content="상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조   무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념   조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함            lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조)       rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조)">
 
 
 
@@ -79,7 +79,7 @@
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
- <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+ <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 <!-- end custom head snippets -->
 
@@ -277,7 +277,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="보편참조">
-    <meta itemprop="description" content="  상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조  무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념  조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함          lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조)      rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조)      대표적인 패턴template &lt;typename T&gt;void Func(T&amp;&amp; val); // val은 보편참조 가능  함수 템플릿 매개변수auto&amp;&amp; val = expr; // var는 보편참조  auto&amp;&amp; 변수보편 참조가 아닌 경우  T&amp;&amp; 가 모두 보편 참조인 것은 아님  다음의 경우는 모두 보편참조가 아님void Func(Widget&amp;&amp; val); // 템플릿이 아님 -&gt; rvalue 참조template &lt;typename T&gt;void Func(std::vector&lt;T&gt;&amp;&amp; val); // T는 추론됨 그러나 val 타입 형태가 T&amp;&amp;가 아님 -&gt; rvalue 참조template &lt;typename T&gt;void Func(const T&amp;&amp; val); // const T&amp;&amp; -&gt; rvalue 참조예제 코드#include &lt;iostream&gt;#include &lt;type_traits&gt;template &lt;typename T&gt; void Func(T&amp;&amp; val) // Universal reference{	if(std::is_rvalue_reference&lt;decltype(val)&gt;::value)		std::cout &lt;&lt; &quot;value is r value\n&quot;;	else if(std::is_lvalue_reference&lt;decltype(val)&gt;::value)		std::cout &lt;&lt; &quot;value is l value\n&quot;;}int main(){	Func(3);	int x=10;	Func(x);}출력 결과value is r valuevalue is l value">
+    <meta itemprop="description" content="  상황에 따라 lvalue 참조가 되기도 하고, rvalue 참조가 되기도 하는 T&amp;&amp; 형태의 참조  무조건 rvalue 참조인 일반적인 T&amp;&amp; 와 다르게 템플릿 타입 추론이 개입할 때만 성립하는 개념  조건을 만족하는 T&amp;&amp;에 대해 인자에 따라 다음과 같이 동작함          lvalue 전달 시 : T가 U&amp;로 추론되고, 매개변수 타입은 U&amp; &amp;&amp; -&gt; 참조 축약으로 U&amp; (lvalue 참조)      rvalue 전달 시 : T가 U로 추론되고, 매개변수 타입은 U&amp;&amp; (rvalue 참조)      ">
     <meta itemprop="datePublished" content="2026-01-11T00:00:00+00:00">
     
 
@@ -484,6 +484,59 @@ value is l value
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
+        <a href="/server/connection-pool/" rel="permalink">Connection Pool
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-04-09T00:00:00+00:00">2026-04-09</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Connection Pool
+
+  매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조
+  ThreadPool과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함
+
+
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
         <a href="/c++/std-forward/" rel="permalink">핸들러의 완벽한 전달 std::forward
 </a>
       
@@ -518,9 +571,7 @@ value is l value
 
     <p class="archive__item-excerpt" itemprop="description">std::forward
 
-
-  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
-  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
+</p>
   </article>
 </div>
 
@@ -569,16 +620,7 @@ value is l value
 
     <p class="archive__item-excerpt" itemprop="description">Tag Dispatching
 
-정의
-
-
-  C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴
-  함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함
-
-
-예시
-
-#...</p>
+</p>
   </article>
 </div>
 
@@ -629,76 +671,7 @@ value is l value
   Sample Post
 
 
-#include &lt;iostream&gt;
-
-int main()
-{
-    std::cout &lt;&lt; "hello world!\n";
-}
-
 </p>
-  </article>
-</div>
-
-    
-      
-      
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/random-device/" rel="permalink">C++ random_device
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2025-12-28T00:00:00+00:00">2025-12-28</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">기본 사용
-
-#include &lt;random&gt;
-
-// ...
-
-std::random_device seed;
-std::mt19937 generator(seed());
-
-auto rNumber = generator();
-
-// ...
-
-
-
-  &lt;random&gt; 헤더를...</p>
   </article>
 </div>
 

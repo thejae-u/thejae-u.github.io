@@ -87,7 +87,7 @@
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
- <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+ <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 <!-- end custom head snippets -->
 
@@ -306,6 +306,56 @@
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
+        <a href="/server/connection-pool/" rel="permalink">Connection Pool
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-04-09T00:00:00+00:00">2026-04-09</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Connection Pool
+
+  매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조
+  ThreadPool과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함
+
+
+</p>
+  </article>
+</div>
+
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
         <a href="/c++/std-forward/" rel="permalink">핸들러의 완벽한 전달 std::forward
 </a>
       
@@ -340,9 +390,7 @@
 
     <p class="archive__item-excerpt" itemprop="description">std::forward
 
-
-  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
-  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
+</p>
   </article>
 </div>
 
@@ -435,16 +483,7 @@
 
     <p class="archive__item-excerpt" itemprop="description">Tag Dispatching
 
-정의
-
-
-  C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴
-  함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함
-
-
-예시
-
-#...</p>
+</p>
   </article>
 </div>
 
@@ -492,73 +531,7 @@
   Sample Post
 
 
-#include &lt;iostream&gt;
-
-int main()
-{
-    std::cout &lt;&lt; "hello world!\n";
-}
-
 </p>
-  </article>
-</div>
-
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/random-device/" rel="permalink">C++ random_device
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2025-12-28T00:00:00+00:00">2025-12-28</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">기본 사용
-
-#include &lt;random&gt;
-
-// ...
-
-std::random_device seed;
-std::mt19937 generator(seed());
-
-auto rNumber = generator();
-
-// ...
-
-
-
-  &lt;random&gt; 헤더를...</p>
   </article>
 </div>
 
@@ -589,12 +562,19 @@ auto rNumber = generator();
     
 
     
+      
+        
+        
+        
+        <li><a href="/page2/">2</a></li>
+      
+    
 
     
     
 
     
-      <li><a href="/page2/">2</a></li>
+      <li><a href="/page3/">3</a></li>
     
 
     

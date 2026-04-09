@@ -11,7 +11,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>이동의미론과 std::move - Thejaeu Dev-log</title>
-<meta name="description" content="이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임   복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함   이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨   이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음   이동 생성자 예시  class MyClass { public: 	MyClass(MyClass&amp;&amp; other) noexcept; // 이동 생성자 	MyClass&amp; operator=(MyClass&amp;&amp; other) noexcept; // 이동 대입 연산자 };      rvalue 를 매개변수로 받아 소유권을 이전시킴   std::move     &lt;utility&gt; 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함   객체를 rvalue로 캐스팅하여 lvalue라 하더라도 강제로 이동할 수 있도록 함            실제 이동은 move 생성자/연산자가 실행될 때 일어남           표준 컨테이너 std::vector, std::string, std::unique_ptr 등은 이동 의미론을 완벽하게 지원함   #include &lt;utility&gt; ... std::vector&lt;int&gt; vec(1000000, 1); std::vector&lt;int&gt; newVec;  newVec = vec; // copy semantics newVec = std::move(vec); // move semantics      std::move 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함   복사할 수 없는 객체에 대해서 이동을 적용할 수 있음   주의     이동생성자나 이동 대입 연산자의 정의가 없을 경우 std::move는 이동이 아닌 복사가 이루어짐   결론     이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 이동 생성자, 이동 대입 연산자를 통해 수행할 수 있다   std::move 함수는 lvalue를 rvalue로 캐스팅하여 이동을 강제할 수 있게 한다">
+<meta name="description" content="이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임   복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함   이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨   이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음">
 
 
   <meta name="author" content="김재우(thejaeu)">
@@ -27,7 +27,7 @@
 <meta property="og:url" content="http://0.0.0.0:4000/c++/move/">
 
 
-  <meta property="og:description" content="이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임   복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함   이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨   이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음   이동 생성자 예시  class MyClass { public: 	MyClass(MyClass&amp;&amp; other) noexcept; // 이동 생성자 	MyClass&amp; operator=(MyClass&amp;&amp; other) noexcept; // 이동 대입 연산자 };      rvalue 를 매개변수로 받아 소유권을 이전시킴   std::move     &lt;utility&gt; 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함   객체를 rvalue로 캐스팅하여 lvalue라 하더라도 강제로 이동할 수 있도록 함            실제 이동은 move 생성자/연산자가 실행될 때 일어남           표준 컨테이너 std::vector, std::string, std::unique_ptr 등은 이동 의미론을 완벽하게 지원함   #include &lt;utility&gt; ... std::vector&lt;int&gt; vec(1000000, 1); std::vector&lt;int&gt; newVec;  newVec = vec; // copy semantics newVec = std::move(vec); // move semantics      std::move 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함   복사할 수 없는 객체에 대해서 이동을 적용할 수 있음   주의     이동생성자나 이동 대입 연산자의 정의가 없을 경우 std::move는 이동이 아닌 복사가 이루어짐   결론     이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 이동 생성자, 이동 대입 연산자를 통해 수행할 수 있다   std::move 함수는 lvalue를 rvalue로 캐스팅하여 이동을 강제할 수 있게 한다">
+  <meta property="og:description" content="이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임   복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함   이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨   이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음">
 
 
 
@@ -79,7 +79,7 @@
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
- <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+ <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 <!-- end custom head snippets -->
 
@@ -277,7 +277,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="이동의미론과 std::move">
-    <meta itemprop="description" content="  이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임  복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함  이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨  이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음이동 생성자 예시class MyClass{public:	MyClass(MyClass&amp;&amp; other) noexcept; // 이동 생성자	MyClass&amp; operator=(MyClass&amp;&amp; other) noexcept; // 이동 대입 연산자};  rvalue 를 매개변수로 받아 소유권을 이전시킴std::move  &lt;utility&gt; 헤더에 정의되어있으며 컴파일러가 리소스를 이동할 수 있도록 허용함  객체를 rvalue로 캐스팅하여 lvalue라 하더라도 강제로 이동할 수 있도록 함          실제 이동은 move 생성자/연산자가 실행될 때 일어남        표준 컨테이너 std::vector, std::string, std::unique_ptr 등은 이동 의미론을 완벽하게 지원함#include &lt;utility&gt;...std::vector&lt;int&gt; vec(1000000, 1);std::vector&lt;int&gt; newVec;newVec = vec; // copy semanticsnewVec = std::move(vec); // move semantics  std::move 는 메모리의 추가적인 할당이나 해제가 필요하지 않아 복사보다 비용이 저렴함  복사할 수 없는 객체에 대해서 이동을 적용할 수 있음주의  이동생성자나 이동 대입 연산자의 정의가 없을 경우 std::move는 이동이 아닌 복사가 이루어짐결론  이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 이동 생성자, 이동 대입 연산자를 통해 수행할 수 있다  std::move 함수는 lvalue를 rvalue로 캐스팅하여 이동을 강제할 수 있게 한다">
+    <meta itemprop="description" content="  이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임  복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함  이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨  이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음">
     <meta itemprop="datePublished" content="2025-11-17T00:00:00+00:00">
     
 
@@ -322,7 +322,7 @@
       <section class="page__content" itemprop="text">
         
         <ul>
-  <li>이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 <strong>이전</strong> 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임</li>
+  <li>이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 <strong>이전</strong> 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임</li>
   <li>복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 <strong>이동</strong>시켜 불필요한 데이터 복사를 피함</li>
   <li>이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, <code class="language-plaintext highlighter-rouge">valid-but-unspecified</code> 상태가 됨</li>
   <li>이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음</li>
@@ -476,6 +476,59 @@
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
+        <a href="/server/connection-pool/" rel="permalink">Connection Pool
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-04-09T00:00:00+00:00">2026-04-09</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Connection Pool
+
+  매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조
+  ThreadPool과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함
+
+
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
         <a href="/c++/std-forward/" rel="permalink">핸들러의 완벽한 전달 std::forward
 </a>
       
@@ -510,9 +563,7 @@
 
     <p class="archive__item-excerpt" itemprop="description">std::forward
 
-
-  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
-  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
+</p>
   </article>
 </div>
 
@@ -610,73 +661,6 @@
 
 
     <p class="archive__item-excerpt" itemprop="description">Tag Dispatching
-
-정의
-
-
-  C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴
-  함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함
-
-
-예시
-
-#...</p>
-  </article>
-</div>
-
-    
-      
-      
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/test/sample/" rel="permalink">Sample
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2026-01-01T00:00:00+00:00">2026-01-01</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
-        
-          less than 1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">
-  Sample Post
-
-
-#include &lt;iostream&gt;
-
-int main()
-{
-    std::cout &lt;&lt; "hello world!\n";
-}
 
 </p>
   </article>

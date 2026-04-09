@@ -12,7 +12,7 @@ var store = [{
         "teaser": null
       },{
         "title": "이동의미론과 std::move",
-        "excerpt":"이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임 복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함 이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가...","categories": ["C++"],
+        "excerpt":"이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임 복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함 이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가...","categories": ["C++"],
         "tags": ["c++","cpp","std::move","move","이동의미론"],
         "url": "/c++/move/",
         "teaser": null
@@ -57,5 +57,11 @@ var store = [{
         "excerpt":"std::forward std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수 std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-value, r-value)를 보존하여 다시 넘겨주는 함수 L-Value로 들어왔으면 L-Value로, R-Value로 들어왔으면 R-Value로 캐스팅 됨 기본 형태 template &lt;typename T, typename... Args&gt; void wrapper(T&amp;&amp; t, Args&amp;&amp;... args) {...","categories": ["C++"],
         "tags": ["forward","handler","c++","cpp","move"],
         "url": "/c++/std-forward/",
+        "teaser": null
+      },{
+        "title": "Connection Pool",
+        "excerpt":"Connection Pool 매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조 ThreadPool과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함 구조 클라이언트 측에서 로직 서버로 DB 요청을 하면 로직 서버는 인증 서버와 미리 연결 된 TCP Connection을 Pool에서 받아 해당 Conection으로 로직을...","categories": ["Server"],
+        "tags": ["tcp","connection pool","network","server"],
+        "url": "/server/connection-pool/",
         "teaser": null
       }]

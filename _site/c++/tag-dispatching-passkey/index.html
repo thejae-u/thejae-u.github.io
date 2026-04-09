@@ -11,7 +11,7 @@
     <meta charset="utf-8">
 
 <!-- begin _includes/seo.html --><title>Tag Dispatching과 Passkey Idiom - Thejaeu Dev-log</title>
-<meta name="description" content="Tag Dispatching  정의     C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴   함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함   예시  #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt;  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { 	std::cout &lt;&lt; &quot;O(1) Access\n&quot;; 	it += n; }  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { 	std::cout &lt;&lt; &quot;O(N) Access\n&quot;; 	for (int i = 0; i &lt; n; ++i) 		++it; }  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); }   int main() { 	std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; 	auto vIt = v.begin();  	Func(vIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *vIt &lt;&lt; &#39;\n&#39;;  	std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; 	auto lIt = l.begin();  	Func(lIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *lIt &lt;&lt; &#39;\n&#39;; }      FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음   컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨   결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨   C++ 17  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) 	{ 		it += n; 	} 	else 	{ 		for(int i = 0; i &lt; n; ++i) 			++it; 	} }      C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음   태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다   Passkey Idiom (private tag)  사용방법     스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나   class A { private: 	struct SecretKey {}; public: 	explicit A(SecretKey) 	{ 		std::cout &lt;&lt; &quot;Make A by Secret Key\n&quot;; 	}  	static auto Create() 	{ 		auto newA = std::make_shared&lt;A&gt;(SecretKey{}); 		return newA; 	}  private:  };  int main() { 	auto validA = A::Create(); // 정상 작동 	auto invalidA = new A(); // 컴파일 에러 }      생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함   사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음   주의점     스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음   이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함   결론     따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함">
+<meta name="description" content="Tag Dispatching">
 
 
   <meta name="author" content="김재우(thejaeu)">
@@ -27,7 +27,7 @@
 <meta property="og:url" content="http://0.0.0.0:4000/c++/tag-dispatching-passkey/">
 
 
-  <meta property="og:description" content="Tag Dispatching  정의     C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴   함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함   예시  #include &lt;iostream&gt; #include &lt;vector&gt; #include &lt;list&gt; #include &lt;iterator&gt;  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag) { 	std::cout &lt;&lt; &quot;O(1) Access\n&quot;; 	it += n; }  template &lt;typename Iter&gt; void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag) { 	std::cout &lt;&lt; &quot;O(N) Access\n&quot;; 	for (int i = 0; i &lt; n; ++i) 		++it; }  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {}); }   int main() { 	std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 }; 	auto vIt = v.begin();  	Func(vIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *vIt &lt;&lt; &#39;\n&#39;;  	std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 }; 	auto lIt = l.begin();  	Func(lIt, 3); 	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *lIt &lt;&lt; &#39;\n&#39;; }      FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음   컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨   결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨   C++ 17  template &lt;typename Iter&gt; void Func(Iter&amp; it, int n) { 	if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;) 	{ 		it += n; 	} 	else 	{ 		for(int i = 0; i &lt; n; ++i) 			++it; 	} }      C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음   태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다   Passkey Idiom (private tag)  사용방법     스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나   class A { private: 	struct SecretKey {}; public: 	explicit A(SecretKey) 	{ 		std::cout &lt;&lt; &quot;Make A by Secret Key\n&quot;; 	}  	static auto Create() 	{ 		auto newA = std::make_shared&lt;A&gt;(SecretKey{}); 		return newA; 	}  private:  };  int main() { 	auto validA = A::Create(); // 정상 작동 	auto invalidA = new A(); // 컴파일 에러 }      생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함   사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음   주의점     스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음   이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함   결론     따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함">
+  <meta property="og:description" content="Tag Dispatching">
 
 
 
@@ -79,7 +79,7 @@
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
- <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+ <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 <!-- end custom head snippets -->
 
@@ -277,7 +277,7 @@
 
   <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="Tag Dispatching과 Passkey Idiom">
-    <meta itemprop="description" content="Tag Dispatching정의  C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴  함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함예시#include &lt;iostream&gt;#include &lt;vector&gt;#include &lt;list&gt;#include &lt;iterator&gt;template &lt;typename Iter&gt;void FuncImpl(Iter&amp; it, int n, std::random_access_iterator_tag){	std::cout &lt;&lt; &quot;O(1) Access\n&quot;;	it += n;}template &lt;typename Iter&gt;void FuncImpl(Iter&amp; it, int n, std::bidirectional_iterator_tag){	std::cout &lt;&lt; &quot;O(N) Access\n&quot;;	for (int i = 0; i &lt; n; ++i)		++it;}template &lt;typename Iter&gt;void Func(Iter&amp; it, int n){	FuncImpl(it, n, typename std::iterator_traits&lt;Iter&gt;::iterator_category {});}int main(){	std::vector&lt;int&gt; v = { 1, 2, 3, 4, 5 };	auto vIt = v.begin();	Func(vIt, 3);	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *vIt &lt;&lt; &#39;\n&#39;;	std::list&lt;int&gt; l = { 1, 2, 3, 4, 5 };	auto lIt = l.begin();	Func(lIt, 3);	std::cout &lt;&lt; &quot;value: &quot; &lt;&lt; *lIt &lt;&lt; &#39;\n&#39;;}  FuncImpl에서 std::random_access_iterator_tag나 std::bidirectional_iterator_tag와 같은 빈 구조체를 매개변수로 받음  컴파일 시점에 iterator_traits&lt;Iter&gt;::iterator_category{}를 통해 타입에 대한 함수가 연결됨  결과적으로 if 문 없이 태그를 통해 내부적으로 적절한 함수에 연결(Dispatch)하게 됨C++ 17template &lt;typename Iter&gt;void Func(Iter&amp; it, int n){	if constexpr (std::is_same_v&lt;typename std::iterator_traits&lt;Iter&gt;::iterator_category, std::random_access_iterator_tag&gt;)	{		it += n;	}	else	{		for(int i = 0; i &lt; n; ++i)			++it;	}}  C++ 17 이상부터는 태그 디스패칭을 직접 구현하지 않고 if constexpr을 통해 컴파일 시점에서 적절한 함수로 매핑되도록 할 수 있음  태그 디스패칭처럼 함수 오버로딩으로 인한 코드 가독성을 해치는 일이 없으며 디버깅에 유리한 장점이 있다Passkey Idiom (private tag)사용방법  스마트 포인터를 사용함과 동시에 정해진 생성 규칙을 따르도록 강제하는 방법 중 하나class A{private:	struct SecretKey {};public:	explicit A(SecretKey)	{		std::cout &lt;&lt; &quot;Make A by Secret Key\n&quot;;	}	static auto Create()	{		auto newA = std::make_shared&lt;A&gt;(SecretKey{});		return newA;	}private:};int main(){	auto validA = A::Create(); // 정상 작동	auto invalidA = new A(); // 컴파일 에러}  생성자는 Tag용 빈 구조체 SecretKey을 매개변수로 받아 외부에서 생성자를 직접 호출 할 수 없도록 함  사용자는 A클래스의 Create함수만을 통해 A객체를 생성할 수 있음주의점  스마트 포인터의 make_shared, make_unique는 A 클래스에 대해 외부 함수이므로 new 호출을 통해 포인터를 생성하도록 설계되어 있음  이때, A클래스의 생성자를 private영역으로 옮기게 되면 스마트포인터 생성 과정에서 접근제한 오류가 발생함결론  따라서 explicit 키워드와 빈 private tag를 통해 생성자를 외부로 노출시키되 직접 호출하지 못하도록 함">
+    <meta itemprop="description" content="Tag Dispatching">
     <meta itemprop="datePublished" content="2026-01-11T00:00:00+00:00">
     
 
@@ -551,6 +551,59 @@
     
     <h2 class="archive__item-title no_toc" itemprop="headline">
       
+        <a href="/server/connection-pool/" rel="permalink">Connection Pool
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-04-09T00:00:00+00:00">2026-04-09</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Connection Pool
+
+  매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조
+  ThreadPool과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함
+
+
+</p>
+  </article>
+</div>
+
+    
+      
+      
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
         <a href="/c++/std-forward/" rel="permalink">핸들러의 완벽한 전달 std::forward
 </a>
       
@@ -585,9 +638,7 @@
 
     <p class="archive__item-excerpt" itemprop="description">std::forward
 
-
-  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
-  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
+</p>
   </article>
 </div>
 
@@ -688,76 +739,7 @@
   Sample Post
 
 
-#include &lt;iostream&gt;
-
-int main()
-{
-    std::cout &lt;&lt; "hello world!\n";
-}
-
 </p>
-  </article>
-</div>
-
-    
-      
-      
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title no_toc" itemprop="headline">
-      
-        <a href="/c++/random-device/" rel="permalink">C++ random_device
-</a>
-      
-    </h2>
-    
-
-  <p class="page__meta">
-    
-      
-      <span class="page__meta-date">
-        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
-        
-        <time datetime="2025-12-28T00:00:00+00:00">2025-12-28</time>
-      </span>
-    
-
-    <span class="page__meta-sep"></span>
-
-    
-      
-      
-
-      <span class="page__meta-readtime">
-        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
-        
-          1 minute read
-        
-      </span>
-    
-  </p>
-
-
-    <p class="archive__item-excerpt" itemprop="description">기본 사용
-
-#include &lt;random&gt;
-
-// ...
-
-std::random_device seed;
-std::mt19937 generator(seed());
-
-auto rNumber = generator();
-
-// ...
-
-
-
-  &lt;random&gt; 헤더를...</p>
   </article>
 </div>
 

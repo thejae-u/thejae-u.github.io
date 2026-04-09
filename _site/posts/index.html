@@ -75,7 +75,7 @@
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
- <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+ <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 <!-- end custom head snippets -->
 
@@ -158,7 +158,7 @@
   
     <li>
       <a href="#2026">
-        <strong>2026</strong> <span class="taxonomy__count">4</span>
+        <strong>2026</strong> <span class="taxonomy__count">5</span>
       </a>
     </li>
   
@@ -182,6 +182,58 @@
   <section id="2026" class="taxonomy__section">
     <h2 class="archive__subtitle">2026</h2>
     <div class="entries-list">
+      
+        
+
+
+
+<div class="list__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/server/connection-pool/" rel="permalink">Connection Pool
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        
+        <time datetime="2026-04-09T00:00:00+00:00">2026-04-09</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          1 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">Connection Pool
+
+  매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조
+  ThreadPool과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함
+
+
+</p>
+  </article>
+</div>
+
       
         
 
@@ -226,9 +278,7 @@
 
     <p class="archive__item-excerpt" itemprop="description">std::forward
 
-
-  std::move는 인자를 무조건 R-Value로 캐스팅하여 이동 생성/연산자를 사용할 수 있도록 하는 함수
-  std::forward는 보편 참조 (Universal Reference) 매개변수를 받아서 호출자가 넘긴 value category(l-...</p>
+</p>
   </article>
 </div>
 
@@ -325,16 +375,7 @@
 
     <p class="archive__item-excerpt" itemprop="description">Tag Dispatching
 
-정의
-
-
-  C++에서 함수 오버로딩과 템플릿을 활용해 타입이나 속성에 따라 다른 구현을 호출하는 메타프로그래밍 패턴
-  함수 인자로 태그(빈 구조체나 클래스)를 전달하여 컴파일러가 오버로드 된 함수들 중에서 적합한 구현을 선택하도록 함
-
-
-예시
-
-#...</p>
+</p>
   </article>
 </div>
 
@@ -383,13 +424,6 @@
     <p class="archive__item-excerpt" itemprop="description">
   Sample Post
 
-
-#include &lt;iostream&gt;
-
-int main()
-{
-    std::cout &lt;&lt; "hello world!\n";
-}
 
 </p>
   </article>
@@ -447,20 +481,7 @@ int main()
 
     <p class="archive__item-excerpt" itemprop="description">기본 사용
 
-#include &lt;random&gt;
-
-// ...
-
-std::random_device seed;
-std::mt19937 generator(seed());
-
-auto rNumber = generator();
-
-// ...
-
-
-
-  &lt;random&gt; 헤더를...</p>
+</p>
   </article>
 </div>
 
@@ -511,10 +532,7 @@ auto rNumber = generator();
   메모리가 해제되지 못하고 끝까지 남아있는 것을 발견하고 해당 문제를 해결하게 되었다
 
 
-문제점
-
-
-  shared_ptr...</p>
+</p>
   </article>
 </div>
 
@@ -562,14 +580,7 @@ auto rNumber = generator();
 
     <p class="archive__item-excerpt" itemprop="description">lvalue
 
-
-  메모리 주소가 존재하며 식별자가 있는 표현식
-  참조나 대입이 가능, &amp;연산자로 주소를 가져올 수 있음
-  변수 이름, 배열요소, 반환값이 참조형인 함수 등은 lvalue의 대표적인 예시임
-
-
-int x = 10; // x -&gt; lvalue
-int*...</p>
+</p>
   </article>
 </div>
 
@@ -616,8 +627,8 @@ int*...</p>
 
 
     <p class="archive__item-excerpt" itemprop="description">
-  이동 의미론이란 객체의 자원 소유구너을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임
-  복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 ...</p>
+  이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임
+  복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피...</p>
   </article>
 </div>
 
@@ -673,12 +684,7 @@ int*...</p>
 
     <p class="archive__item-excerpt" itemprop="description">Boost.Asio async_write
 
-
-  
-    Boost.Asio 라이브러리의 async_write를 사용하는 방법은 다음과 같음
-
-    
-      boost::asio::async_write(s, boost::asio::buffer(data, size), handl...</p>
+</p>
   </article>
 </div>
 
@@ -728,9 +734,7 @@ int*...</p>
   참고 : FMOD .gitignore
 
 
-
-  FMOD 프로젝트를 Github에 올리고 관리하기 위해서 추적하는 파일들을 보니 너무 많고 올리지 않아도 되는 파일들이 딸려 들어오는것을 보게 되었다.
-  바로 gitignore 파일이 있는지 확인 해 보았고 위 참고 사이트에서 ...</p>
+</p>
   </article>
 </div>
 
