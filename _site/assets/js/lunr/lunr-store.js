@@ -64,4 +64,10 @@ var store = [{
         "tags": ["tcp","connection pool","network","server"],
         "url": "/server/connection-pool/",
         "teaser": null
+      },{
+        "title": "IL 분석을 통해 얻은 것",
+        "excerpt":"C# 의 IL 을 분석 할 수 있는 능력을 위해 IL코드를 직접 분석하는 도중 발생한 사소한 이슈에 대해 제대로 알고 기억하기 위해 이 글을 작성함 IL 분석 Perplexity AI 를 통해 IL 코드를 무작정 해석해 달라 하고, 각 명령어가 뭘 의미하는지 부터 알아보게 되었다 public static bool IsNullOrEmpty([NotNullWhen(false)] string? value)...","categories": ["Personal"],
+        "tags": ["C#","CSharp","IL"],
+        "url": "/personal/parameter-index-with-il-analysis/",
+        "teaser": null
       }]

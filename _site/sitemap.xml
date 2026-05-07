@@ -4,6 +4,19 @@
         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
     <url>
+        <loc>http://0.0.0.0:4000/personal/parameter-index-with-il-analysis/</loc>
+        
+        <lastmod>2026-05-07T00:00:00+00:00</lastmod>
+        
+        
+        <changefreq>weekly</changefreq>
+        
+        
+        <priority>0.5</priority>
+        
+    </url>
+    
+    <url>
         <loc>http://0.0.0.0:4000/server/connection-pool/</loc>
         
         <lastmod>2026-04-09T00:00:00+00:00</lastmod>

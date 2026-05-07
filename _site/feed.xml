@@ -1,4 +1,240 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-04-09T08:25:23+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">Connection Pool</title><link href="http://0.0.0.0:4000/server/connection-pool/" rel="alternate" type="text/html" title="Connection Pool" /><published>2026-04-09T00:00:00+00:00</published><updated>2026-04-09T00:00:00+00:00</updated><id>http://0.0.0.0:4000/server/connection-pool</id><content type="html" xml:base="http://0.0.0.0:4000/server/connection-pool/"><![CDATA[<h2 id="connection-pool">Connection Pool</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2026-05-07T13:01:54+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Thejaeu Dev-log</title><subtitle>Game Server Programmer</subtitle><author><name>김재우(thejaeu)</name></author><entry><title type="html">IL 분석을 통해 얻은 것</title><link href="http://0.0.0.0:4000/personal/parameter-index-with-il-analysis/" rel="alternate" type="text/html" title="IL 분석을 통해 얻은 것" /><published>2026-05-07T00:00:00+00:00</published><updated>2026-05-07T00:00:00+00:00</updated><id>http://0.0.0.0:4000/personal/parameter-index-with-il-analysis</id><content type="html" xml:base="http://0.0.0.0:4000/personal/parameter-index-with-il-analysis/"><![CDATA[<blockquote>
+  <p>C# 의 IL 을 분석 할 수 있는 능력을 위해 IL코드를 직접 분석하는 도중 발생한 사소한 이슈에 대해 제대로 알고 기억하기 위해 이 글을 작성함</p>
+</blockquote>
+
+<h2 id="il-분석">IL 분석</h2>
+
+<p>Perplexity AI 를 통해 IL 코드를 무작정 해석해 달라 하고, 각 명령어가 뭘 의미하는지 부터 알아보게 되었다</p>
+
+<div class="language-cs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">IsNullOrEmpty</span><span class="p">([</span><span class="nf">NotNullWhen</span><span class="p">(</span><span class="k">false</span><span class="p">)]</span> <span class="kt">string</span><span class="p">?</span> <span class="k">value</span><span class="p">)</span>
+<span class="p">{</span>
+	 <span class="k">return</span> <span class="k">value</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="k">value</span><span class="p">.</span><span class="n">Length</span> <span class="p">==</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-cs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">.</span><span class="n">method</span> <span class="k">public</span> <span class="n">hidebysig</span> <span class="k">static</span> <span class="kt">bool</span>
+  <span class="nf">IsNullOrEmpty</span><span class="p">(</span>
+      <span class="kt">string</span> <span class="err">'</span><span class="k">value</span><span class="err">'</span>
+    <span class="p">)</span> <span class="n">cil</span> <span class="n">managed</span>
+<span class="p">{</span>
+  <span class="p">.</span><span class="n">custom</span> <span class="n">instance</span> <span class="k">void</span> <span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">CompilerServices</span><span class="p">.</span><span class="n">NullableContextAttribute</span><span class="p">::.</span><span class="nf">ctor</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">int8</span><span class="p">)</span>
+    <span class="p">=</span> <span class="p">(</span><span class="m">01</span> <span class="m">00</span> <span class="m">02</span> <span class="m">00</span> <span class="m">00</span> <span class="p">)</span> <span class="c1">// .....</span>
+    <span class="c1">// unsigned int8(2) // 0x02</span>
+  <span class="p">.</span><span class="n">param</span> <span class="p">[</span><span class="m">1</span><span class="p">]</span>
+    <span class="p">.</span><span class="n">custom</span> <span class="n">instance</span> <span class="k">void</span> <span class="n">System</span><span class="p">.</span><span class="n">Diagnostics</span><span class="p">.</span><span class="n">CodeAnalysis</span><span class="p">.</span><span class="n">NotNullWhenAttribute</span><span class="p">::.</span><span class="nf">ctor</span><span class="p">(</span><span class="kt">bool</span><span class="p">)</span>
+      <span class="p">=</span> <span class="p">(</span><span class="m">01</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="p">)</span> <span class="c1">// .....</span>
+      <span class="c1">// bool(false)</span>
+  <span class="p">.</span><span class="n">maxstack</span> <span class="m">8</span>
+  <span class="c1">// [505 13 - 505 55]</span>
+  <span class="n">IL_0000</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">0</span>      <span class="c1">// 'value'</span>
+  <span class="n">IL_0001</span><span class="p">:</span> <span class="n">brfalse</span><span class="p">.</span><span class="n">s</span>    <span class="n">IL_000d</span>
+  <span class="n">IL_0003</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">0</span>      <span class="c1">// 'value'</span>
+  <span class="n">IL_0004</span><span class="p">:</span> <span class="n">callvirt</span>     <span class="n">instance</span> <span class="n">int32</span> <span class="n">System</span><span class="p">.</span><span class="n">String</span><span class="p">::</span><span class="nf">get_Length</span><span class="p">()</span>
+  <span class="n">IL_0009</span><span class="p">:</span> <span class="n">ldc</span><span class="p">.</span><span class="n">i4</span><span class="p">.</span><span class="m">0</span>
+  <span class="n">IL_000a</span><span class="p">:</span> <span class="n">ceq</span>
+  <span class="n">IL_000c</span><span class="p">:</span> <span class="n">ret</span>
+  <span class="n">IL_000d</span><span class="p">:</span> <span class="n">ldc</span><span class="p">.</span><span class="n">i4</span><span class="p">.</span><span class="m">1</span>
+  <span class="n">IL_000e</span><span class="p">:</span> <span class="n">ret</span>
+<span class="p">}</span> <span class="c1">// end of method String::IsNullOrEmpty</span>
+</code></pre></div></div>
+
+<p>가장 먼저 본 것은 <code class="language-plaintext highlighter-rouge">String.IsNullOrEmpty()</code>의 IL 코드이다</p>
+
+<p>그 중에서도 IL_0000 으로 시작하는 asm 같은 부분을 자세히 보게 되었다</p>
+
+<div class="language-cs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// [505 13 - 505 55]</span>
+  <span class="n">IL_0000</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">0</span>      <span class="c1">// 'value'</span>
+  <span class="n">IL_0001</span><span class="p">:</span> <span class="n">brfalse</span><span class="p">.</span><span class="n">s</span>    <span class="n">IL_000d</span>
+  <span class="n">IL_0003</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">0</span>      <span class="c1">// 'value'</span>
+  <span class="n">IL_0004</span><span class="p">:</span> <span class="n">callvirt</span>     <span class="n">instance</span> <span class="n">int32</span> <span class="n">System</span><span class="p">.</span><span class="n">String</span><span class="p">::</span><span class="nf">get_Length</span><span class="p">()</span>
+  <span class="n">IL_0009</span><span class="p">:</span> <span class="n">ldc</span><span class="p">.</span><span class="n">i4</span><span class="p">.</span><span class="m">0</span>
+  <span class="n">IL_000a</span><span class="p">:</span> <span class="n">ceq</span>
+  <span class="n">IL_000c</span><span class="p">:</span> <span class="n">ret</span>
+  <span class="n">IL_000d</span><span class="p">:</span> <span class="n">ldc</span><span class="p">.</span><span class="n">i4</span><span class="p">.</span><span class="m">1</span>
+  <span class="n">IL_000e</span><span class="p">:</span> <span class="n">ret</span>
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">IL_0000: ldarg.0</code>
+    <ul>
+      <li>매개변수를 스택에 저장함</li>
+      <li>여기서는 <code class="language-plaintext highlighter-rouge">String.IsNullOrEmtpy(string value)</code> 중 <code class="language-plaintext highlighter-rouge">value</code>에 해당된다</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">IL_0001: brfalse.s    IL_000d</code>
+    <ul>
+      <li>0/null 인 경우 <code class="language-plaintext highlighter-rouge">IL_000d</code>로 분기함</li>
+      <li>여기서는 <code class="language-plaintext highlighter-rouge">value</code>가 false 인 경우 분기하도록 한다</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">IL0003: ldarg.0</code>, <code class="language-plaintext highlighter-rouge">IL0004: callvirt    instance int32 System.String::get_Length()</code>
+    <ul>
+      <li>매개변수를 다시 스택에 저장, value에 대한 Length를 호출</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">IL_0009: ldc.i4.0</code>
+    <ul>
+      <li>0을 스택에 저장</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">IL_000a: ceq</code>
+    <ul>
+      <li>같은지 비교 -&gt; 0 또는 1을 스택에 저장</li>
+      <li>여기서는 value의 Length와 스택에 저장된 0을 비교한다</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">IL_000c: ret</code>
+    <ul>
+      <li>return</li>
+      <li>비교 결과를 return한다</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">IL_000d: ldc.i4.1</code>
+    <ul>
+      <li>1을 스택에 저장</li>
+      <li><code class="language-plaintext highlighter-rouge">IL_0001</code>을 통해 분기 한 결과로 value가 null 일 경우 1을 반환하도록 하기 위한 명령어다</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">IL_000e: ret</code>
+    <ul>
+      <li>return</li>
+      <li><code class="language-plaintext highlighter-rouge">IL_000d</code>를 통해 저장된 1을 return한다</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="인스턴스-메서드의-ldarg-인덱스">인스턴스 메서드의 <code class="language-plaintext highlighter-rouge">ldarg</code> 인덱스</h2>
+
+<h3 id="connectasync-il">ConnectAsync IL</h3>
+
+<ul>
+  <li>다음은 아무 코드나 읽어보자 해서 <code class="language-plaintext highlighter-rouge">Socket.Tasks.cs</code>에 존재하는 <code class="language-plaintext highlighter-rouge">ConnectAsync</code>에 대한 IL 코드를 읽어보게 되었다</li>
+</ul>
+
+<div class="language-cs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="n">ValueTask</span> <span class="nf">ConnectAsync</span><span class="p">(</span><span class="kt">string</span> <span class="n">host</span><span class="p">,</span> <span class="kt">int</span> <span class="n">port</span><span class="p">,</span> <span class="n">CancellationToken</span> <span class="n">cancellationToken</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ArgumentNullException</span><span class="p">.</span><span class="nf">ThrowIfNull</span><span class="p">(</span><span class="n">host</span><span class="p">);</span>
+
+    <span class="n">EndPoint</span> <span class="n">ep</span> <span class="p">=</span> <span class="n">IPAddress</span><span class="p">.</span><span class="nf">TryParse</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="k">out</span> <span class="n">IPAddress</span><span class="p">?</span> <span class="n">parsedAddress</span><span class="p">)</span> <span class="p">?</span> <span class="p">(</span><span class="n">EndPoint</span><span class="p">)</span>
+        <span class="k">new</span> <span class="nf">IPEndPoint</span><span class="p">(</span><span class="n">parsedAddress</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">new</span> <span class="nf">DnsEndPoint</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">ConnectAsync</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">cancellationToken</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-cs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">method</span> <span class="k">public</span> <span class="n">hidebysig</span> <span class="n">instance</span> <span class="n">valuetype</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Threading</span><span class="p">.</span><span class="n">Tasks</span><span class="p">.</span><span class="n">ValueTask</span>
+  <span class="nf">ConnectAsync</span><span class="p">(</span>
+      <span class="kt">string</span> <span class="n">host</span><span class="p">,</span>
+      <span class="n">int32</span> <span class="n">port</span><span class="p">,</span>
+	  <span class="n">valuetype</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Threading</span><span class="p">.</span><span class="n">CancellationToken</span> <span class="n">cancellationToken</span>
+  <span class="p">)</span> <span class="n">cil</span> <span class="n">managed</span>
+<span class="p">{</span>
+  <span class="p">.</span><span class="n">maxstack</span> <span class="m">3</span>
+  <span class="p">.</span><span class="nf">locals</span> <span class="p">(</span>
+    <span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="k">class</span> <span class="err">[</span><span class="nc">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">EndPoint</span> <span class="n">ep</span><span class="p">,</span>
+    <span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="k">class</span> <span class="err">[</span><span class="nc">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">IPAddress</span> <span class="n">parsedAddress</span>
+  <span class="p">)</span>
+  <span class="c1">// [214 13 - 214 53]</span>
+  <span class="n">IL_0000</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">1</span>      <span class="c1">// host</span>
+  <span class="n">IL_0001</span><span class="p">:</span> <span class="n">ldstr</span>        <span class="s">"host"</span>
+  <span class="n">IL_0006</span><span class="p">:</span> <span class="n">call</span>         <span class="k">void</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">ArgumentNullException</span><span class="p">::</span><span class="nf">ThrowIfNull</span><span class="p">(</span><span class="kt">object</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span>
+
+  <span class="c1">// [216 13 - 218 45]</span>
+  <span class="n">IL_000b</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">1</span>      <span class="c1">// host</span>
+  <span class="n">IL_000c</span><span class="p">:</span> <span class="n">ldloca</span><span class="p">.</span><span class="n">s</span>     <span class="n">parsedAddress</span>
+  <span class="n">IL_000e</span><span class="p">:</span> <span class="n">call</span>         <span class="kt">bool</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">IPAddress</span><span class="p">::</span><span class="nf">TryParse</span><span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="k">class</span> <span class="err">[</span><span class="nc">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">IPAddress</span><span class="p">&amp;)</span>
+  <span class="n">IL_0013</span><span class="p">:</span> <span class="n">brtrue</span><span class="p">.</span><span class="n">s</span>     <span class="n">IL_001e</span>
+  <span class="n">IL_0015</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">1</span>      <span class="c1">// host</span>
+  <span class="n">IL_0016</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">2</span>      <span class="c1">// port</span>
+  <span class="n">IL_0017</span><span class="p">:</span> <span class="n">newobj</span>       <span class="n">instance</span> <span class="k">void</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">DnsEndPoint</span><span class="p">::.</span><span class="nf">ctor</span><span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="n">int32</span><span class="p">)</span>
+  <span class="n">IL_001c</span><span class="p">:</span> <span class="n">br</span><span class="p">.</span><span class="n">s</span>         <span class="n">IL_0025</span>
+  <span class="n">IL_001e</span><span class="p">:</span> <span class="n">ldloc</span><span class="p">.</span><span class="m">1</span>      <span class="c1">// parsedAddress</span>
+  <span class="n">IL_001f</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">2</span>      <span class="c1">// port</span>
+  <span class="n">IL_0020</span><span class="p">:</span> <span class="n">newobj</span>       <span class="n">instance</span> <span class="k">void</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">IPEndPoint</span><span class="p">::.</span><span class="nf">ctor</span><span class="p">(</span><span class="k">class</span> <span class="err">[</span><span class="nc">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">IPAddress</span><span class="p">,</span> <span class="n">int32</span><span class="p">)</span>
+  <span class="n">IL_0025</span><span class="p">:</span> <span class="n">stloc</span><span class="p">.</span><span class="m">0</span>      <span class="c1">// ep</span>
+
+  <span class="c1">// [219 13 - 219 56]</span>
+  <span class="n">IL_0026</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">0</span>      <span class="c1">// this</span>
+  <span class="n">IL_0027</span><span class="p">:</span> <span class="n">ldloc</span><span class="p">.</span><span class="m">0</span>      <span class="c1">// ep</span>
+  <span class="n">IL_0028</span><span class="p">:</span> <span class="n">ldarg</span><span class="p">.</span><span class="m">3</span>      <span class="c1">// cancellationToken</span>
+  <span class="n">IL_0029</span><span class="p">:</span> <span class="n">call</span>         <span class="n">instance</span> <span class="n">valuetype</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Threading</span><span class="p">.</span><span class="n">Tasks</span><span class="p">.</span><span class="n">ValueTask</span> <span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Sockets</span><span class="p">.</span><span class="n">Socket</span><span class="p">::</span><span class="nf">ConnectAsync</span><span class="p">(</span><span class="k">class</span> <span class="err">[</span><span class="nc">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">Primitives</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">EndPoint</span><span class="p">,</span> <span class="n">valuetype</span> <span class="p">[</span><span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Threading</span><span class="p">.</span><span class="n">CancellationToken</span><span class="p">)</span>
+  <span class="n">IL_002e</span><span class="p">:</span> <span class="n">ret</span>
+<span class="p">}</span> <span class="c1">// end of method Socket::ConnectAsync</span>
+</code></pre></div></div>
+
+<ul>
+  <li>매우 길지만 <code class="language-plaintext highlighter-rouge">ldarg.0</code>과 <code class="language-plaintext highlighter-rouge">ldarg.1</code>을 설명하기 위한 IL 코드이다</li>
+  <li>앞서 등장했던 <code class="language-plaintext highlighter-rouge">ldarg</code>와 <code class="language-plaintext highlighter-rouge">brtrue.s</code> 등 무엇을 하려는지는 이해를 할 수 있었다</li>
+</ul>
+
+<h3 id="궁금했던-점">궁금했던 점</h3>
+
+<ul>
+  <li>처음에는 당연히 <code class="language-plaintext highlighter-rouge">ldarg.0</code> 이 host를 의미할 것이라고 생각했다. 그러나 IL코드는 <code class="language-plaintext highlighter-rouge">ldarg.1</code>이 host를 의미하는 것으로 되어있었고, 매개변수의 인덱싱이 zero-based가 아닌가 생각도 했었다.</li>
+  <li>AI를 통해 질문을 해 보았다.
+    <ul>
+      <li>“<code class="language-plaintext highlighter-rouge">ldarg.1</code>이 host인데 <code class="language-plaintext highlighter-rouge">ldarg.0</code>은 무엇인가? 설마 제로베이스가 아닌건가?”</li>
+    </ul>
+  </li>
+  <li>답은 간단했다
+    <ul>
+      <li>“인스턴스 메서드는 항상 <strong><code class="language-plaintext highlighter-rouge">this</code></strong> 를 포함하여 <code class="language-plaintext highlighter-rouge">ldarg.0</code>은 this이다.”</li>
+    </ul>
+  </li>
+  <li>IL에도 당연한 듯이 적혀 있었다 그러나 의미를 몰랐다
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">IL_0026: ldarg.0   //this</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="결론">결론</h3>
+
+<h4 id="인스턴스-메서드">인스턴스 메서드</h4>
+
+<div class="language-cs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyClass</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">Method</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="c1">// ...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>클래스의 인스턴스를 통해 호출되는 메서드</li>
+  <li>항상 <code class="language-plaintext highlighter-rouge">this</code>를 매개변수로 포함한다
+    <ul>
+      <li>python의 <code class="language-plaintext highlighter-rouge">def method(self, x): ...</code> 처럼 내부적으로 self가 자동으로 들어가는 구조와 비슷하다</li>
+    </ul>
+  </li>
+  <li>특정 인스턴스를 통해 호출하는 인스턴스 매개변수는 <code class="language-plaintext highlighter-rouge">ldarg.0</code>은 항상 <code class="language-plaintext highlighter-rouge">this</code> 이고, 이후로 해당 메서드의 매개변수가 차례대로 <code class="language-plaintext highlighter-rouge">ldarg.1</code>, <code class="language-plaintext highlighter-rouge">ldarg.2</code>, … 로 매핑된다</li>
+</ul>
+
+<h4 id="정적-메서드">정적 메서드</h4>
+
+<div class="language-cs highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyClass</span>
+<span class="p">{</span>
+	<span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Method</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="c1">// ...</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>클래스 자체에 붙어있는 메서드</li>
+  <li>인스턴스가 존재하지 않음</li>
+  <li><code class="language-plaintext highlighter-rouge">ldarg.0</code>에 메서드의 첫 번째 인자부터 매핑된다</li>
+</ul>
+
+<h2 id="느낀점">느낀점</h2>
+
+<ul>
+  <li>어찌보면 당연한 얘기인데 C# 지식에 대해서 다시 생각하게되는 계기가 된 것 같다</li>
+  <li>IL 코드가 asm 처럼 무작정 어려울 것 같아 시도를 하지 못했었는데 생각보다 읽기 편하고 재미있어서 다행이다</li>
+  <li>이후에는 IL 을 통한 최적화 등 못해본 것들도 도전해 봐야겠다는 생각을 하게 되었다</li>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="Personal" /><category term="C#" /><category term="CSharp" /><category term="IL" /><summary type="html"><![CDATA[C# 의 IL 을 분석 할 수 있는 능력을 위해 IL코드를 직접 분석하는 도중 발생한 사소한 이슈에 대해 제대로 알고 기억하기 위해 이 글을 작성함]]></summary></entry><entry><title type="html">Connection Pool</title><link href="http://0.0.0.0:4000/server/connection-pool/" rel="alternate" type="text/html" title="Connection Pool" /><published>2026-04-09T00:00:00+00:00</published><updated>2026-04-09T00:00:00+00:00</updated><id>http://0.0.0.0:4000/server/connection-pool</id><content type="html" xml:base="http://0.0.0.0:4000/server/connection-pool/"><![CDATA[<h2 id="connection-pool">Connection Pool</h2>
 <ul>
   <li>매 요청마다 새 TCP 연결을 만들지 않고, 미리 만들어 둔 연결들을 빌려쓰고 반납하는 구조</li>
   <li><code class="language-plaintext highlighter-rouge">ThreadPool</code>과 같이 생성에 비용이 큰 객체를 미리 만들어 사용하는 것을 목표로 함</li>
@@ -718,99 +954,4 @@ value is l value
 <ul>
   <li>이동 의미론은 메모리 관리의 효율을 위한 하나의 수단이며 <strong>이동 생성자</strong>, <strong>이동 대입 연산자</strong>를 통해 수행할 수 있다</li>
   <li><code class="language-plaintext highlighter-rouge">std::move</code> 함수는 <code class="language-plaintext highlighter-rouge">lvalue</code>를 <code class="language-plaintext highlighter-rouge">rvalue</code>로 캐스팅하여 이동을 강제할 수 있게 한다</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="std::move" /><category term="move" /><category term="이동의미론" /><summary type="html"><![CDATA[이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임 복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함 이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨 이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음]]></summary></entry><entry><title type="html">Boost.asio async 사용 및 주의점</title><link href="http://0.0.0.0:4000/c++/asio-warning/" rel="alternate" type="text/html" title="Boost.asio async 사용 및 주의점" /><published>2024-12-06T00:00:00+00:00</published><updated>2024-12-06T00:00:00+00:00</updated><id>http://0.0.0.0:4000/c++/asio-warning</id><content type="html" xml:base="http://0.0.0.0:4000/c++/asio-warning/"><![CDATA[<h2 id="boostasio-async_write">Boost.Asio async_write</h2>
-
-<ul>
-  <li>
-    <p>Boost.Asio 라이브러리의 async_write를 사용하는 방법은 다음과 같음</p>
-
-    <blockquote>
-      <p><code class="language-plaintext highlighter-rouge">boost::asio::async_write(s, boost::asio::buffer(data, size), handler);</code></p>
-    </blockquote>
-  </li>
-  <li>각 Parameter는 <code class="language-plaintext highlighter-rouge">AsyncWirteStream</code>, <code class="language-plaintext highlighter-rouge">ConstBufferSequence</code>, <code class="language-plaintext highlighter-rouge">WriteHandler</code>로 되어있음</li>
-  <li>두 번째 Parameter에는 string과 같이 서버 혹은 클라이언트로 보낼 데이터가 들어가게 되며, 공식 Document에서는 Boost.Asio 라이브러리의 buffer를 사용하도록 권장함</li>
-</ul>
-
-<h2 id="example">Example</h2>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">write</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">message</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="k">auto</span> <span class="n">self</span><span class="p">(</span><span class="n">shared_from_this</span><span class="p">());</span>
-
-    <span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">async_write</span><span class="p">(</span><span class="n">_socket</span><span class="p">,</span> <span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">buffer</span><span class="p">(</span><span class="n">message</span><span class="p">),</span>
-    <span class="p">[</span><span class="n">self</span><span class="p">,</span> <span class="n">message</span><span class="p">](</span><span class="n">boost</span><span class="o">::</span><span class="n">system</span><span class="o">::</span><span class="n">error_code</span> <span class="n">ec</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error: "</span> <span class="o">&lt;&lt;</span> <span class="n">ec</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-            <span class="k">return</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="n">self</span><span class="o">-&gt;</span><span class="n">read</span><span class="p">();</span> <span class="c1">// 다음 데이터 전송을 대기하기 위한 호출</span>
-    <span class="p">});</span>
-
-<span class="p">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>예시 코드에서는 Write를 호출하면서 매개변수로 shared_ptr<string>을 넘겨주게 되어있으며 async_write에 매개변수를 넘겨줄 때에는 message를 boost::asio::buffer를 통해 넘겨줌</string></li>
-  <li>또한 Handler는 Lambda를 통해서 매개변수를 넘겨주었음</li>
-</ul>
-
-<h2 id="주의할-점">주의할 점</h2>
-
-<ul>
-  <li>Async 함수 내의 로컬 변수를 handler에서 사용할 가능성이 있다면 메모리 해제를 방지해야 함</li>
-  <li>
-    <p><strong>예제에서의 <code class="language-plaintext highlighter-rouge">message</code>에 대한 관리</strong></p>
-  </li>
-  <li>공식 문서에는 다음과 같이 설명되어 있음</li>
-</ul>
-
-<blockquote>
-  <p>One or more buffers containing the data to be written. Although the buffers object may be copied as necessary, ownership of the underlying memory blocks is retained by the caller, which must guarantee that they remain valid until the handler is called.</p>
-</blockquote>
-
-<blockquote>
-  <p>기록할 데이터가 포함된 하나 이상의 버퍼. 버퍼 개체는 필요에 따라 복사할 수 있지만 기본 메모리 블록의 소유권은 호출자가 유지하므로 핸들러가 호출될 때까지 유효하게 유지되어야 합니다. (papago 번역)</p>
-</blockquote>
-
-<ul>
-  <li>쉽게 말하자면 예제에서의 message는 handler가 호출 될 때 까지 유효해야 한다는 것</li>
-  <li>이와 같이 공식 문서에서도 메모리 관리에 대해 주의해야 한다고 되어있음</li>
-</ul>
-
-<h2 id="해결-방안">해결 방안</h2>
-
-<ul>
-  <li>스마트 포인터의 사용</li>
-</ul>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">write</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">message</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">auto</span> <span class="n">self</span><span class="p">(</span><span class="n">shared_from_this</span><span class="p">());</span>
-    <span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">async_write</span><span class="p">(</span><span class="n">_socket</span><span class="p">,</span> <span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">buffer</span><span class="p">(</span><span class="o">*</span><span class="n">message</span><span class="p">),</span>
-        <span class="p">[</span><span class="n">self</span><span class="p">,</span> <span class="n">message</span><span class="p">](</span><span class="n">boost</span><span class="o">::</span><span class="n">system</span><span class="o">::</span><span class="n">error_code</span> <span class="n">ec</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span>
-            <span class="p">{</span>
-                <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">"Error: "</span> <span class="o">&lt;&lt;</span> <span class="n">ec</span><span class="p">.</span><span class="n">message</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-                <span class="k">return</span><span class="p">;</span>
-            <span class="p">}</span>
-
-       <span class="n">self</span><span class="o">-&gt;</span><span class="n">read</span><span class="p">();</span>
-    <span class="p">});</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>message 자체를 shared_ptr 로 관리하며 참조 count를 통해 소멸 시점을 늦춤</li>
-  <li>공식 문서에서 권장하는 방식과 부합하며 비동기적인 처리를 할 수 있는 가장 편하고 안전한 방법이라고 생각하여 사용하게 됨</li>
-</ul>
-
-<h2 id="결론">결론</h2>
-
-<ul>
-  <li>async_write() 와 같은 비동기 처리 로직이 있다면 스마트 포인터를 적극 활용하여 안전한 비동기 처리를 할 수 있도록 해야 함</li>
-</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="C++" /><category term="boost.asio" /><category term="asio" /><category term="async" /><category term="dangling-pointer" /><summary type="html"><![CDATA[Boost.Asio async_write]]></summary></entry></feed>
+</ul>]]></content><author><name>김재우(thejaeu)</name></author><category term="C++" /><category term="c++" /><category term="cpp" /><category term="std::move" /><category term="move" /><category term="이동의미론" /><summary type="html"><![CDATA[이동 의미론이란 객체의 자원 소유권을 복사를 통해 복제하는 것이 아니라 이전 하는 방식을 성능과 메모리 효율을 극대화 하는 C++11의 중요한 기능임 복사 의미론과 반대로 기존 객체의 내용을 복제하지 않고 기존 객체의 소유권을 새 객체로 이동시켜 불필요한 데이터 복사를 피함 이동 후 원본 객체는 자원을 더 이상 소유하지 않으며, valid-but-unspecified 상태가 됨 이동 생성자와 이동 할당 연산자가 도입되어 자원의 소유권을 효율적으로 이전할 수 있음]]></summary></entry></feed>
